@@ -1,4 +1,5 @@
 require_relative 'square'
+require_relative 'piece'
 
 class Board
   attr_reader :board, :config, :current_file, :current_rank
@@ -20,8 +21,8 @@ class Board
   def populate_board
     1.upto(8) do |i|
       1.upto(8) do |j|
-        board[[j, i]].piece = config[file: j, rank: i][:piece][0].new(
-          config[file: j,rank: i][:piece][1]) if config[file: j, rank: i][:piece]
+        piece = config[file: j, rank: i][:piece]
+        board[[j, i]].piece = piece[0].new(piece[1]) if piece
       end
     end
   end
@@ -72,31 +73,24 @@ class Board
     end
     diagonals
   end
-end
 
-class Piece
-  attr_reader :color
-  def initialize(color)
-    @color = color
+  def print_upper_lower_rank(rank)
+    1.upto(8).map { |i| board[[i, rank]].upper_lower_third }.join
   end
-end
 
-class Pawn < Piece
-end
+  def print_middle_rank(rank)
+    1.upto(8).map { |i| board[[i, rank]].middle_third }.join
+  end
 
-class Knight < Piece
-end
+  def print_rank(rank)
+    print_upper_lower_rank(rank) + "\n" +
+    print_middle_rank(rank)      + "\n" +
+    print_upper_lower_rank(rank)
+  end
 
-class Bishop < Piece
-end
-
-class Rook < Piece
-end
-
-class Queen < Piece
-end
-
-class King < Piece
+  def print_board
+    puts 8.downto(1).map { |i| print_rank(i) }.join("\n")
+  end
 end
 
 initial_board_config = Hash.new(piece: nil).merge(
@@ -132,3 +126,10 @@ initial_board_config = Hash.new(piece: nil).merge(
   { file: 6, rank: 8 } => { piece: [Bishop, 'black'] },
   { file: 7, rank: 8 } => { piece: [Knight, 'black'] },
   { file: 8, rank: 8 } => { piece: [Rook,   'black'] } )
+
+b = Board.new(config: initial_board_config)
+b.populate_board
+b.change_rank
+puts b.print_board
+b.change_rank(1)
+puts b.print_board
