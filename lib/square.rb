@@ -1,12 +1,13 @@
 class Square
   attr_reader :file, :rank, :background_color
-  attr_accessor :piece
+  attr_accessor :piece, :marked
 
   def initialize(file:, rank:, piece: nil)
     @file             = file
     @rank             = rank
     @piece            = piece
-    @background_color = choose_color(file, rank)
+    @background_color = choose_color
+    @marked           = false
   end
 
   def to_s
@@ -18,11 +19,13 @@ class Square
 
   private
 
-  def choose_color(file, rank)
-    same_parity?(file, rank) ? 'dark' : 'light'
+  def choose_color
+    return 'green' if marked
+
+    same_parity? ? 'dark' : 'light'
   end
 
-  def same_parity?(file, rank)
+  def same_parity?
     (file % 2) == (rank % 2)
   end
 end
