@@ -1,3 +1,5 @@
+require 'colorize'
+
 class Square
   attr_reader :file, :rank, :background_color
   attr_accessor :piece, :marked
@@ -17,12 +19,24 @@ class Square
     file_map[file].concat(rank.to_s)
   end
 
+  def piece_symbol
+    piece ? piece.symbol : ' '
+  end
+
+  def upper_lower_third
+    "     ".send("on_#{choose_color}".to_sym)
+  end
+
+  def middle_third
+    ("  " + piece_symbol + "  ").send("on_#{choose_color}".to_sym)
+  end
+
   private
 
   def choose_color
-    return 'green' if marked
+    return 'light_white' if marked
 
-    same_parity? ? 'dark' : 'light'
+    same_parity? ? 'green' : 'light_yellow'
   end
 
   def same_parity?
