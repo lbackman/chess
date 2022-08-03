@@ -1,5 +1,3 @@
-require 'colorize'
-
 class Square
   attr_reader :file, :rank, :background_color
   attr_accessor :piece, :marked
@@ -24,19 +22,19 @@ class Square
   end
 
   def upper_lower_third
-    "     ".send("on_#{choose_color}".to_sym)
+    "\u001b[48;5;#{choose_color}m     \u001b[0m"
   end
 
   def middle_third
-    ("  " + piece_symbol + "  ").send("on_#{choose_color}".to_sym)
+    "\u001b[48;5;#{choose_color}m  #{piece_symbol}  \u001b[0m"
   end
 
   private
 
   def choose_color
-    return 'light_white' if marked
+    return '48' if marked
 
-    same_parity? ? 'green' : 'light_yellow'
+    same_parity? ? '223' : '255'
   end
 
   def same_parity?
