@@ -1,5 +1,5 @@
 require_relative 'square'
-require_relative 'piece'
+require_relative 'pieces'
 
 class Board
   attr_reader :board, :config, :current_file, :current_rank
@@ -93,39 +93,7 @@ class Board
   end
 end
 
-initial_board_config = Hash.new(piece: nil).merge(
-  { file: 1, rank: 1 } => { piece: [Rook,   'white'] },
-  { file: 2, rank: 1 } => { piece: [Knight, 'white'] },
-  { file: 3, rank: 1 } => { piece: [Bishop, 'white'] },
-  { file: 4, rank: 1 } => { piece: [Queen,  'white'] },
-  { file: 5, rank: 1 } => { piece: [King,   'white'] },
-  { file: 6, rank: 1 } => { piece: [Bishop, 'white'] },
-  { file: 7, rank: 1 } => { piece: [Knight, 'white'] },
-  { file: 8, rank: 1 } => { piece: [Rook,   'white'] },
-  { file: 1, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 2, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 3, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 4, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 5, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 6, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 7, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 8, rank: 2 } => { piece: [Pawn,   'white'] },
-  { file: 1, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 2, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 3, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 4, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 5, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 6, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 7, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 8, rank: 7 } => { piece: [Pawn,   'black'] },
-  { file: 1, rank: 8 } => { piece: [Rook,   'black'] },
-  { file: 2, rank: 8 } => { piece: [Knight, 'black'] },
-  { file: 3, rank: 8 } => { piece: [Bishop, 'black'] },
-  { file: 4, rank: 8 } => { piece: [Queen,  'black'] },
-  { file: 5, rank: 8 } => { piece: [King,   'black'] },
-  { file: 6, rank: 8 } => { piece: [Bishop, 'black'] },
-  { file: 7, rank: 8 } => { piece: [Knight, 'black'] },
-  { file: 8, rank: 8 } => { piece: [Rook,   'black'] } )
+initial_board_config = Pieces.config('white', 'black')
 
 b = Board.new(config: initial_board_config)
 b.populate_board
