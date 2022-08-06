@@ -74,6 +74,25 @@ class Board
     diagonals
   end
 
+  def diagonal_attacks(color:, file:, rank:, range:)
+    diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
+    attacked = []
+    diagonals.each do |diag|
+      i = 1
+      until i >= range ||
+        !board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)] ||
+        board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)].piece&.color
+        attacked << board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)]
+        if board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)].piece&.color &&
+          board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)].piece&.color != color
+          attacked << board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)]
+        end
+        i += 1
+      end
+    end
+    attacked.map(&:piece)
+  end
+
   def print_upper_lower_rank(rank)
     1.upto(8).map { |i| board[[i, rank]].upper_lower_third }.join
   end
@@ -93,11 +112,12 @@ class Board
   end
 end
 
-initial_board_config = Pieces.config('white', 'black')
+initial_board_config = Pieces.config(:white, :black)
 
 b = Board.new(config: initial_board_config)
 b.populate_board
 b.change_rank
 puts b.print_board
-b.change_rank(1)
+b.change_rank(-1)
 puts b.print_board
+p b.diagonal_attacks(color: :black, range: 7, file: 1, rank: 4)
