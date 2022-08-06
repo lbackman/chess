@@ -21,6 +21,10 @@ class Square
     piece ? piece.symbol : ' '
   end
 
+  def piece_color
+    piece&.color
+  end
+
   def upper_lower_third
     "\u001b[48;5;#{choose_color}m     \u001b[0m"
   end

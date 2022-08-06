@@ -21,8 +21,7 @@ class Board
   def populate_board
     1.upto(8) do |i|
       1.upto(8) do |j|
-        piece = config[file: j, rank: i][:piece]
-        board[[j, i]].piece = piece[0].new(piece[1]) if piece
+        board[[j, i]].piece = config[file: j, rank: i][:piece]
       end
     end
   end
@@ -53,44 +52,48 @@ class Board
     board[destination].piece = piece
   end
 
-  def diagonals(file, rank)
-    diagonal = []
-    1.upto(7) do |i|
-      diagonal << board[[file + i, rank + i]] # up-right diagonal
-      diagonal << board[[file + i, rank - i]] # down-right diagonal
-      diagonal << board[[file - i, rank - i]] # down-left diagonal
-      diagonal << board[[file - i, rank + i]] # up-left diagonal
-    end
-    diagonal.compact
-  end
+  def attacks(file:, rank:)
+    return [] if board[[file, rank]].piece.nil?
 
-  def diagonal_ur(file, rank) # Up and to the Right
-    diagonals = []
-    i = 0
-    until board[[file + i + 1, rank + i + 1]].nil? || board[[file + i, rank + i]].piece
-      i += 1
-      diagonals << board[[file + i, rank + i]]
-    end
-    diagonals
-  end
+    piece = board[[file, rank]].piece
+    return pawn_attacks(file:, rank:, piece: piece) if piece.name == 'pawn'
 
-  def diagonal_attacks(color:, file:, rank:, range:)
-    diagonals = [[1, 1], [1, -1], [-1, 1], [-1, -1]]
     attacked = []
-    diagonals.each do |diag|
+    piece.vectors.each do |vector|
+      sub = []
       i = 1
-      until i >= range ||
-        !board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)] ||
-        board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)].piece&.color
-        attacked << board[[file, rank].zip(diag.map { |n| n * i }).map(&:sum)]
-        if board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)].piece&.color &&
-          board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)].piece&.color != color
-          attacked << board[[file, rank].zip(diag.map { |n| n * (i+1) }).map(&:sum)]
-        end
+      until i >= piece.range + 1 || !add_square(file, rank, vector, i) || sub.last&.piece
+        sub << add_square(file, rank, vector, i)
+        i += 1
+      end
+      sub.each { |el| attacked << el }
+    end
+    attacked.
+      reject { |square| square.piece_color == piece.color }.
+      map { |s| [s.file, s.rank] }
+  end
+
+  def pawn_attacks(file:, rank:, piece:)
+    attacked = []
+    piece.vectors[:move].each do |vector|
+      i = 1
+      while i <= piece.range && add_square(file, rank, vector, i).piece.nil?
+        attacked << add_square(file, rank, vector, i)
         i += 1
       end
     end
-    attacked.map(&:piece)
+    piece.vectors[:attack].each do |vector|
+      if add_square(file, rank, vector, 1)&.piece
+        attacked << add_square(file, rank, vector, 1)
+      end
+    end
+    attacked.
+      reject { |square| square.piece_color == piece.color }.
+      map { |s| [s.file, s.rank] }
+  end
+
+  def add_square(file, rank, vector, range)
+    board[[file, rank].zip(vector.map { |n| n * range }).map(&:sum)]
   end
 
   def print_upper_lower_rank(rank)
@@ -115,9 +118,17 @@ end
 initial_board_config = Pieces.config(:white, :black)
 
 b = Board.new(config: initial_board_config)
-b.populate_board
-b.change_rank
+# b.populate_board
+# b.change_rank
+# puts b.print_board
+# b.change_rank(-1)
+b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
+b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
+b.board[[2, 3]].piece = Pieces::Queen.new(:black)
+b.board[[4, 2]].piece = Pieces::Knight.new(:white)
+b.board[[1, 1]].piece = Pieces::Knight.new(:black)
+b.board[[5, 4]].piece = Pieces::Rook.new(:white)
+b.board[[6, 2]].piece = Pieces::King.new(:white)
+b.board[[8, 8]].piece = Pieces::King.new(:black)
 puts b.print_board
-b.change_rank(-1)
-puts b.print_board
-p b.diagonal_attacks(color: :black, range: 7, file: 1, rank: 4)
+p b.attacks(file: 4, rank: 2)
