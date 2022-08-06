@@ -1,4 +1,3 @@
-require 'colorize'
 module Pieces
   def self.config(color1, color2)
     Hash.new(piece: nil).merge(
@@ -40,8 +39,7 @@ module Pieces
     attr_reader :color
     def initialize(color)
       @color = color
-
-      # post_initialize
+      @times_moved = 0
     end
 
     def name
@@ -49,7 +47,7 @@ module Pieces
     end
 
     def direction
-      'all'
+      [1, -1]
     end
 
     def symbol
@@ -81,12 +79,11 @@ module Pieces
     end
 
     def direction
-      { 'white' => 'up', 'black' => 'down' }[color]
+      { white: [1], black: [-1] }[color]
     end
 
     def symbol
-      { 'white' => "\u2659", 'black' => "\u265f" }[color]
-      # "\u265f".send(color.to_sym)
+      { white: "\u2659", black: "\u265f" }[color]
     end
   end
 
@@ -96,8 +93,7 @@ module Pieces
     end
 
     def symbol
-      { 'white' => "\u2658", 'black' => "\u265e" }[color]
-      # "\u265e".send(color.to_sym)
+      { white: "\u2658", black: "\u265e" }[color]
     end
   end
 
@@ -107,8 +103,7 @@ module Pieces
     end
 
     def symbol
-      { 'white' => "\u2657", 'black' => "\u265d" }[color]
-      # "\u265d".send(color.to_sym)
+      { white: "\u2657", black: "\u265d" }[color]
     end
   end
 
@@ -118,8 +113,7 @@ module Pieces
     end
 
     def symbol
-      { 'white' => "\u2656", 'black' => "\u265c" }[color]
-      # "\u265c".send(color.to_sym)
+      { white: "\u2656", black: "\u265c" }[color]
     end
   end
 
@@ -129,8 +123,7 @@ module Pieces
     end
 
     def symbol
-      { 'white' => "\u2655", 'black' => "\u265b" }[color]
-      # "\u265b".send(color.to_sym)
+      { white: "\u2655", black: "\u265b" }[color]
     end
   end
 
@@ -140,8 +133,7 @@ module Pieces
     end
 
     def symbol
-      { 'white' => "\u2654", 'black' => "\u265a" }[color]
-      # "\u265a".send(color.to_sym)
+      { white: "\u2654", black: "\u265a" }[color]
     end
   end
 end
