@@ -11,4 +11,8 @@ class Game
   def move_piece(piece: nil, destination: nil)
     board.move_piece(piece:, destination:)
   end
+
+  def change_player!
+    @current_player, @next_player = next_player, current_player
+  end
 end
