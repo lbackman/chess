@@ -21,6 +21,10 @@ class Square
     piece ? piece.symbol : ' '
   end
 
+  def piece_name
+    piece&.name
+  end
+
   def piece_color
     piece&.color
   end
