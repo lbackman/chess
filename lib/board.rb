@@ -109,27 +109,35 @@ class Board
   def print_board
     puts 8.downto(1).map { |i| print_rank(i) }.join("\n")
   end
+
+  def squares(color)
+    board.select { |_k, v| v.piece_color == color }
+  end
+  
+  def king_square(color)
+    squares(color).select { |_k, v| v.piece_name == 'king' }
+  end
 end
 
 initial_board_config = Pieces.config(:white, :black)
 
 b = Board.new(config: initial_board_config)
-b.populate_board
+# b.populate_board
 # b.change_rank
 # puts b.print_board
 # b.change_rank(-1)
-# b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
-# b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
-# b.board[[2, 3]].piece = Pieces::Queen.new(:black)
-# b.board[[4, 2]].piece = Pieces::Knight.new(:white)
-# b.board[[1, 1]].piece = Pieces::Knight.new(:black)
-# b.board[[5, 4]].piece = Pieces::Rook.new(:white)
-# b.board[[6, 2]].piece = Pieces::King.new(:white)
-# b.board[[8, 8]].piece = Pieces::King.new(:black)
-# b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
+b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
+b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
+b.board[[2, 3]].piece = Pieces::Queen.new(:black)
+b.board[[4, 2]].piece = Pieces::Knight.new(:white)
+b.board[[1, 1]].piece = Pieces::Knight.new(:black)
+b.board[[5, 4]].piece = Pieces::Rook.new(:white)
+b.board[[6, 2]].piece = Pieces::King.new(:white)
+b.board[[8, 8]].piece = Pieces::King.new(:black)
+b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
 puts b.print_board
 p b.attacks(file: 4, rank: 2)
-# b.squares(:white).each_value { |v| puts v }
-# p b.squares(:white)
-# p b.king_square(:white)
-# p b.board
+b.squares(:white).each_value { |v| puts v }
+p b.squares(:white)
+p b.king_square(:white)
+
