@@ -101,7 +101,7 @@ RSpec.describe Board do
     end
   end
 
-  describe '#attacks' do
+  RSpec.shared_context 'attacking' do
     subject(:b) { described_class.new(square: Square) }
     before do
       b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
@@ -113,6 +113,7 @@ RSpec.describe Board do
       b.board[[6, 2]].piece = Pieces::King.new(:white)
       b.board[[8, 8]].piece = Pieces::King.new(:black)
       b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
+      b.board[[8, 1]].piece = Pieces::Knight.new(:black)
       @wp_attacks = b.attacks(file: 4, rank: 4)
       @bp_attacks = b.attacks(file: 4, rank: 5)
       @bq_attacks = b.attacks(file: 2, rank: 3)
@@ -122,7 +123,12 @@ RSpec.describe Board do
       @wk_attacks = b.attacks(file: 6, rank: 2)
       @bk_attacks = b.attacks(file: 8, rank: 8)
       @p2_attacks = b.attacks(file: 8, rank: 2)
+      @n2_attacks = b.attacks(file: 8, rank: 1)
     end
+  end
+
+  describe '#attacks' do
+    include_context 'attacking'
 
     it 'white pawn on d4 has no moves' do
       expect(@wp_attacks.size).to eq(0)
@@ -133,20 +139,20 @@ RSpec.describe Board do
     end
 
     it 'black queen on b3 is blocked by black pawn on d5' do
-      expect(@bq_attacks).to include([3, 4])
-      expect(@bq_attacks).to_not include([4, 5])
+      expect(@bq_attacks).to include('c4')
+      expect(@bq_attacks).to_not include('d5')
     end
 
     it 'black knight on a1 is blocked by black queen b3' do
-      expect(@bn_attacks).to eq([[3, 2]])
+      expect(@bn_attacks).to eq(['c2'])
     end
 
     it 'white knight on d2 can take black queen b3' do
-      expect(@wn_attacks).to include([2, 3])
+      expect(@wn_attacks).to include('b3')
     end
 
     it 'black pawn on d5 can take white rook on e4 and only that square' do
-      expect(@bp_attacks).to eq [[5, 4]]
+      expect(@bp_attacks).to eq ['e4']
     end
 
     it 'white king on f2 attacks all 8 adjacent squares' do
@@ -158,7 +164,19 @@ RSpec.describe Board do
     end
 
     it 'white pawn on g7 can move one or two steps forward' do
-      expect(@p2_attacks).to eq([[8, 3], [8, 4]])
+      expect(@p2_attacks).to eq(['h3', 'h4'])
+    end
+  end
+
+  describe '#king_attacked?' do
+    include_context 'attacking'
+
+    it 'white king is under attack' do
+      expect(b.king_attacked?(:white)).to be_truthy
+    end
+
+    it 'black king is not under attack' do
+      expect(b.king_attacked?(:black)).to be_falsey
     end
   end
 end
