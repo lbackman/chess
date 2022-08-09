@@ -139,20 +139,20 @@ RSpec.describe Board do
     end
 
     it 'black queen on b3 is blocked by black pawn on d5' do
-      expect(@bq_attacks).to include('c4')
-      expect(@bq_attacks).to_not include('d5')
+      expect(@bq_attacks).to include([3, 4])
+      expect(@bq_attacks).to_not include([4, 5])
     end
 
     it 'black knight on a1 is blocked by black queen b3' do
-      expect(@bn_attacks).to eq(['c2'])
+      expect(@bn_attacks).to eq([[3, 2]])
     end
 
     it 'white knight on d2 can take black queen b3' do
-      expect(@wn_attacks).to include('b3')
+      expect(@wn_attacks).to include([2,3])
     end
 
     it 'black pawn on d5 can take white rook on e4 and only that square' do
-      expect(@bp_attacks).to eq ['e4']
+      expect(@bp_attacks).to eq [[5, 4]]
     end
 
     it 'white king on f2 attacks all 8 adjacent squares' do
@@ -164,19 +164,19 @@ RSpec.describe Board do
     end
 
     it 'white pawn on g7 can move one or two steps forward' do
-      expect(@p2_attacks).to eq(['h3', 'h4'])
+      expect(@p2_attacks).to eq([[8, 3], [8, 4]])
     end
   end
 
-  describe '#king_attacked?' do
+  describe '#king_checked?' do
     include_context 'attacking'
 
-    it 'white king is under attack' do
-      expect(b.king_attacked?(:white)).to be_truthy
+    it 'white king is in check' do
+      expect(b.king_checked?(:white)).to be_truthy
     end
 
-    it 'black king is not under attack' do
-      expect(b.king_attacked?(:black)).to be_falsey
+    it 'black king is not in check' do
+      expect(b.king_checked?(:black)).to be_falsey
     end
   end
 end

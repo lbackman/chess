@@ -64,8 +64,9 @@ class Board
       end
       sub.each { |el| attacked << el }
     end
-    attacked.reject { |square| square.piece_color == piece.color }.map(&:to_s)
-      # .map { |s| [s.file, s.rank] }
+    attacked.reject { |square| square.piece_color == piece.color }
+      # .map(&:to_s)
+      .map { |s| [s.file, s.rank] }
   end
 
   def pawn_attacks(file:, rank:, piece:)
@@ -82,8 +83,9 @@ class Board
         attacked << add_square(file, rank, vector, 1)
       end
     end
-    attacked.reject { |square| square.piece_color == piece.color }.map(&:to_s)
-      # .map { |s| [s.file, s.rank] }
+    attacked.reject { |square| square.piece_color == piece.color }
+      # .map(&:to_s)
+      .map { |s| [s.file, s.rank] }
   end
 
   def add_square(file, rank, vector, range)
@@ -113,19 +115,20 @@ class Board
   end
   
   def king_square(color)
-    squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_s
+    squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
   end
 
   def all_attacks(color)
-    attacked = []
+    attacked = {}
     squares(color).each do |_k, v|
-      attacked << attacks(file: v.file, rank: v.rank)
+      attacked[v.piece] = attacks(file: v.file, rank: v.rank)
     end
-    attacked.flatten.uniq
+    attacked
   end
 
-  def king_attacked?(color)
-    all_attacks(other_color(color)).include?(king_square(color))
+  def king_checked?(color)
+    all_attacks(other_color(color))
+      .any? { |_k, v| v.include?(king_square(color)) }
   end
 
   def other_color(color)
@@ -150,11 +153,11 @@ b.board[[6, 2]].piece = Pieces::King.new(:white)
 b.board[[8, 8]].piece = Pieces::King.new(:black)
 b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
 b.board[[8, 1]].piece = Pieces::Knight.new(:black)
-puts b.print_board
+# puts b.print_board
 # p b.attacks(file: 8, rank: 1)
 # b.squares(:white).each_value { |v| puts v }
 # p b.squares(:white)
 # p b.king_square(:white)
-# puts b.king_attacked?(:white)
-# puts b.king_attacked?(:black)
-p b.all_attacks(:white)
+puts b.king_checked?(:white)
+puts b.king_checked?(:black)
+# p b.all_attacks(:black)
