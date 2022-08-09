@@ -17,6 +17,10 @@ class Square
     file_map[file].concat(rank.to_s)
   end
 
+  def to_a
+    [file, rank]
+  end
+
   def piece_symbol
     piece ? piece.symbol : ' '
   end
