@@ -42,10 +42,11 @@ module Pieces
 
   class Piece
     attr_reader :color
-    attr_accessor :times_moved
+    attr_accessor :times_moved, :available_moves
     def initialize(color)
       @color = color
       @times_moved = 0
+      @available_moves = []
     end
 
     def name

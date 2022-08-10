@@ -46,6 +46,14 @@ class Board
     piece = select_piece(start)
     board[start].piece = nil
     board[destination].piece = piece
+    piece.times_moved += 1
+  end
+
+  def undo_move(destination, start, temp_piece)
+    piece = select_piece(destination)
+    board[start].piece = piece
+    board[destination].piece = temp_piece
+    piece.times_moved -= 1
   end
 
   def attacks(file:, rank:)
@@ -120,10 +128,26 @@ class Board
 
   def all_attacks(color)
     attacked = {}
-    squares(color).each do |_k, v|
-      attacked[v.piece] = attacks(file: v.file, rank: v.rank)
+    squares(color).each do |k, v|
+      attacked[[k, v.piece]] = attacks(file: v.file, rank: v.rank)
     end
     attacked
+  end
+
+  def set_available_moves(piece, start, piece_attacks)
+    available = []
+    piece_attacks.each do |dest|
+      temp_piece = board[dest].piece
+      move_piece(start, dest)
+      available << dest unless king_checked?(piece.color)
+      undo_move(dest, start, temp_piece)
+    end
+    piece.available_moves = available
+  end
+
+  def set_all_available_moves(color)
+    attack_hash = all_attacks(color)
+    attack_hash.each { |k, v| set_available_moves(k.last, k.first, v) }
   end
 
   def king_checked?(color)
@@ -152,12 +176,17 @@ b.board[[5, 4]].piece = Pieces::Rook.new(:white)
 b.board[[6, 2]].piece = Pieces::King.new(:white)
 b.board[[8, 8]].piece = Pieces::King.new(:black)
 b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
-b.board[[8, 1]].piece = Pieces::Knight.new(:black)
-# puts b.print_board
+b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
+b.board[[8, 4]].piece = Pieces::Rook.new(:white)
+b.board[[7, 5]].piece = Pieces::Pawn.new(:black)
+puts b.print_board
 # p b.attacks(file: 8, rank: 1)
 # b.squares(:white).each_value { |v| puts v }
 # p b.squares(:white)
 # p b.king_square(:white)
-puts b.king_checked?(:white)
-puts b.king_checked?(:black)
+# puts b.king_checked?(:white)
+# puts b.king_checked?(:black)
 # p b.all_attacks(:black)
+b.set_all_available_moves(:black)
+b.set_all_available_moves(:white)
+p b.board[[6, 2]].piece.available_moves
