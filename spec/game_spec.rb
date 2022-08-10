@@ -4,10 +4,13 @@ RSpec.describe Game do
   subject(:new_game) { described_class.new(players: ['p1', 'p2'], board: board)}
   describe '#move_piece' do
     let(:board) { double('board') }
-
+    let(:start) { double('square') }
+    let(:destination) { double('square') }
+    before { allow(start).to receive(:to_a) }
+    before { allow(destination).to receive(:to_a) }
     it 'sends message to Board' do
-      expect(board).to receive(:move_piece).with(piece: nil, destination: nil)
-      new_game.move_piece(piece: nil, destination: nil)
+      expect(board).to receive(:move_piece).with(start.to_a, destination.to_a)
+      new_game.move_piece(start, destination)
     end
   end
 

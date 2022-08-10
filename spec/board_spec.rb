@@ -9,8 +9,10 @@ end
 
 class PieceDbl
   attr_reader :color
+  attr_accessor :times_moved
   def initialize(color)
     @color = color
+    @times_moved = 0
   end
 end
 
@@ -53,7 +55,7 @@ RSpec.describe Board do
   describe '#move_piece' do
     subject(:move_board) {  described_class.new(square: SqrDbl, config: double_config )}
     let(:double_config) { Hash.new(piece: nil).merge(
-      { file: 1, rank: 2 } => { piece: [PawnDbl, 'white'] }) }
+      { file: 1, rank: 2 } => { piece: PawnDbl.new('white') }) }
     context 'when moving a pawn from a2 to a4' do
       before do
         move_board.populate_board
