@@ -160,26 +160,26 @@ class Board
   end
 end
 
-initial_board_config = Pieces.config(:white, :black)
+# initial_board_config = Pieces.config(:white, :black)
 
-b = Board.new(config: initial_board_config)
+# b = Board.new(config: initial_board_config)
 # b.populate_board
 # b.change_rank
 # puts b.print_board
 # b.change_rank(-1)
-b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
-b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
-b.board[[2, 3]].piece = Pieces::Queen.new(:black)
-b.board[[4, 2]].piece = Pieces::Knight.new(:white)
-b.board[[1, 1]].piece = Pieces::Knight.new(:black)
-b.board[[5, 4]].piece = Pieces::Rook.new(:white)
-b.board[[6, 2]].piece = Pieces::King.new(:white)
-b.board[[8, 8]].piece = Pieces::King.new(:black)
-b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
-b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
-b.board[[8, 4]].piece = Pieces::Rook.new(:white)
-b.board[[7, 5]].piece = Pieces::Pawn.new(:black)
-puts b.print_board
+# b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
+# b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
+# b.board[[2, 3]].piece = Pieces::Queen.new(:black)
+# b.board[[4, 2]].piece = Pieces::Knight.new(:white)
+# b.board[[1, 1]].piece = Pieces::Knight.new(:black)
+# b.board[[5, 4]].piece = Pieces::Rook.new(:white)
+# b.board[[6, 2]].piece = Pieces::King.new(:white)
+# b.board[[8, 8]].piece = Pieces::King.new(:black)
+# b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
+# b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
+# b.board[[8, 4]].piece = Pieces::Rook.new(:white)
+# b.board[[7, 5]].piece = Pieces::Pawn.new(:black)
+# b.print_board
 # p b.attacks(file: 8, rank: 1)
 # b.squares(:white).each_value { |v| puts v }
 # p b.squares(:white)
@@ -187,6 +187,6 @@ puts b.print_board
 # puts b.king_checked?(:white)
 # puts b.king_checked?(:black)
 # p b.all_attacks(:black)
-b.set_all_available_moves(:black)
-b.set_all_available_moves(:white)
-p b.board[[6, 2]].piece.available_moves
+# b.set_all_available_moves(:black)
+# b.set_all_available_moves(:white)
+# p b.board[[6, 2]].piece.available_moves
