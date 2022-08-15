@@ -47,6 +47,11 @@ module Pieces
       @color = color
       @times_moved = 0
       @available_moves = []
+
+      post_initialize
+    end
+
+    def post_initialize
     end
 
     def name
@@ -83,12 +88,21 @@ module Pieces
       color != other_piece.color
     end
 
+    def ep_vulnerable?(rank)
+      false
+    end
+
     def to_s
       symbol
     end
   end
 
   class Pawn < Piece
+    attr_accessor :ep_counter
+    def post_initialize
+      @ep_counter = 0
+    end
+
     def name
       'pawn'
     end
@@ -111,6 +125,10 @@ module Pieces
         vectors[key] = val.map { |arr| arr.map { |el| el * direction } }
       end
       vectors
+    end
+
+    def ep_vulnerable?(rank)
+      times_moved == 1 && ep_counter == 1 && (rank == 4 || rank == 5)
     end
 
     def range

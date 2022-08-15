@@ -91,6 +91,14 @@ class Board
         attacked << add_square(file, rank, vector, 1)
       end
     end
+    adj_square1 = add_square(file, rank, [1, 0], 1)
+    adj_square2 = add_square(file, rank, [-1, 0], 1)
+    if adj_square1&.piece&.ep_vulnerable?(adj_square1.rank)
+      attacked << add_square(file, rank, [1, piece.direction], 1)
+    end
+    if adj_square2&.piece&.ep_vulnerable?(adj_square2.rank)
+      attacked << add_square(file, rank, [-1, piece.direction], 1)
+    end
     attacked.reject { |square| square.piece_color == piece.color }
       # .map(&:to_s)
       .map { |s| [s.file, s.rank] }
@@ -158,6 +166,19 @@ class Board
   def other_color(color)
     { white: :black, black: :white }[color]
   end
+
+  def all_pawns(color)
+    squares(color).select { |_k, v| v.piece_name == 'pawn' }
+    .map { |_k, v| v.piece }
+  end
+
+  def en_passant(destination, pawn)
+    board[[destination.file, destination.rank - pawn.direction]].piece = nil
+  end
+
+  def promotion(destination, pawn)
+    destination.piece = Pieces::Queen.new(pawn.color)
+  end
 end
 
 # initial_board_config = Pieces.config(:white, :black)
@@ -190,3 +211,4 @@ end
 # b.set_all_available_moves(:black)
 # b.set_all_available_moves(:white)
 # p b.board[[6, 2]].piece.available_moves
+# p b.all_pawns(:white)
