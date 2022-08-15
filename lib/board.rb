@@ -60,7 +60,7 @@ class Board
     return [] if board[[file, rank]].piece.nil?
 
     piece = board[[file, rank]].piece
-    return pawn_attacks(file:, rank:, piece: piece) if piece.name == 'pawn'
+    return pawn_attacks(file:, rank:, pawn: piece) if piece.name == 'pawn'
 
     attacked = []
     piece.vectors.each do |vector|
@@ -77,29 +77,23 @@ class Board
       .map { |s| [s.file, s.rank] }
   end
 
-  def pawn_attacks(file:, rank:, piece:)
+  def pawn_attacks(file:, rank:, pawn:)
     attacked = []
-    piece.vectors[:move].each do |vector|
+    pawn.vectors[:move].each do |vector|
       i = 1
-      while i <= piece.range && add_square(file, rank, vector, i).piece.nil?
+      while i <= pawn.range && add_square(file, rank, vector, i).piece.nil?
         attacked << add_square(file, rank, vector, i)
         i += 1
       end
     end
-    piece.vectors[:attack].each do |vector|
-      if add_square(file, rank, vector, 1)&.piece
+    pawn.vectors[:attack].each do |vector|
+      dest = add_square(file, rank, vector, 1)
+      ep_capture = ep_square(dest, pawn)&.piece if dest
+      if dest&.piece || ep_capture&.ep_vulnerable?(dest.rank - pawn.direction)
         attacked << add_square(file, rank, vector, 1)
       end
     end
-    adj_square1 = add_square(file, rank, [1, 0], 1)
-    adj_square2 = add_square(file, rank, [-1, 0], 1)
-    if adj_square1&.piece&.ep_vulnerable?(adj_square1.rank)
-      attacked << add_square(file, rank, [1, piece.direction], 1)
-    end
-    if adj_square2&.piece&.ep_vulnerable?(adj_square2.rank)
-      attacked << add_square(file, rank, [-1, piece.direction], 1)
-    end
-    attacked.reject { |square| square.piece_color == piece.color }
+    attacked.reject { |square| square.piece_color == pawn.color }
       # .map(&:to_s)
       .map { |s| [s.file, s.rank] }
   end
@@ -172,8 +166,12 @@ class Board
     .map { |_k, v| v.piece }
   end
 
+  def ep_square(square, pawn)
+    board[[square.file, square.rank - pawn.direction]]
+  end
+
   def en_passant(destination, pawn)
-    board[[destination.file, destination.rank - pawn.direction]].piece = nil
+    ep_square(destination, pawn).piece = nil
   end
 
   def promotion(destination, pawn)
