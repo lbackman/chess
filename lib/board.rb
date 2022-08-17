@@ -227,6 +227,18 @@ class Board
       all_attacks(other_color(color)).any? { |_k, v| v.include?(square) }
     end
   end
+
+  def long_castle(color)
+    temp_rook = board[rook_coord(color, :long)].piece
+    board[rook_coord(color, :long)].piece = nil
+    board[castle_coord1(color, :long)].piece = temp_rook
+  end
+
+  def short_castle(color)
+    temp_rook = board[rook_coord(color, :short)].piece
+    board[rook_coord(color, :short)].piece = nil
+    board[castle_coord1(color, :short)].piece = temp_rook
+  end
 end
 
 initial_board_config = Pieces.config(:white, :black)

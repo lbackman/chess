@@ -118,22 +118,10 @@ class Game
 
   def castling(start, color, destination)
     if start.file - destination.file == 2
-      long_castle(color)
+      board.long_castle(color)
     elsif start.file - destination.file == -2
-      short_castle(color)
+      board.short_castle(color)
     end
-  end
-
-  def long_castle(color)
-    temp_rook = board.board[board.rook_coord(color, :long)].piece
-    board.board[board.rook_coord(color, :long)].piece = nil
-    board.board[board.castle_coord1(color, :long)].piece = temp_rook
-  end
-
-  def short_castle(color)
-    temp_rook = board.board[board.rook_coord(color, :short)].piece
-    board.board[board.rook_coord(color, :short)].piece = nil
-    board.board[board.castle_coord1(color, :short)].piece = temp_rook
   end
 end
 
