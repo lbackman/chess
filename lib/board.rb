@@ -137,7 +137,7 @@ class Board
     board.select { |_k, v| v.piece_color == color }
   end
   
-  def king_square(color)
+  def king_coord(color)
     squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
   end
 
@@ -161,10 +161,10 @@ class Board
   end
 
   def set_available_castles(color)
-    king = board[king_square(color)].piece
+    king = board[king_coord(color)].piece
     available = []
     [:long, :short].each do |type|
-      available << castle_square2(color, type) if castling_allowed?(color, type)
+      available << castle_coord2(color, type) if castling_allowed?(color, type)
     end
     available.each { |move| king.available_moves << move }
   end
@@ -177,7 +177,7 @@ class Board
 
   def king_checked?(color)
     all_attacks(other_color(color))
-      .any? { |_k, v| v.include?(king_square(color)) }
+      .any? { |_k, v| v.include?(king_coord(color)) }
   end
 
   def other_color(color)
@@ -203,26 +203,26 @@ class Board
 
   def castling_allowed?(color, type)
     !king_checked?(color) &&
-    board[king_square(color)]&.piece_moved == 0 &&
-    board[rook_square(color, type)]&.piece_moved == 0 &&
-    !any_castle_square_attacked?(color, type) &&
-    board[rook_square(color, type)].legal_piece_moves.include?(castle_square1(color, type))
+    board[king_coord(color)]&.piece_moved == 0 &&
+    board[rook_coord(color, type)]&.piece_moved == 0 &&
+    !any_castle_coord_attacked?(color, type) &&
+    board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
   end
 
-  def rook_square(color, type)
+  def rook_coord(color, type)
     {white: {long: [1, 1], short: [8, 1]}, black: {long: [1, 8], short: [8, 8]}}[color][type]
   end
 
-  def castle_square1(color, type)
+  def castle_coord1(color, type)
     {white: {long: [4, 1], short: [6, 1]}, black: {long: [4, 8], short: [6, 8]}}[color][type]
   end
 
-  def castle_square2(color, type)
+  def castle_coord2(color, type)
     {white: {long: [3, 1], short: [7, 1]}, black: {long: [3, 8], short: [7, 8]}}[color][type]
   end
 
-  def any_castle_square_attacked?(color, type)
-    squares = [castle_square1(color, type), castle_square2(color, type)]
+  def any_castle_coord_attacked?(color, type)
+    squares = [castle_coord1(color, type), castle_coord2(color, type)]
     squares.any? do |square|
       all_attacks(other_color(color)).any? { |_k, v| v.include?(square) }
     end
@@ -257,7 +257,7 @@ b = Board.new(config: initial_board_config)
 # p b.attacks(file: 8, rank: 1)
 # b.squares(:white).each_value { |v| puts v }
 # p b.squares(:white)
-# p b.king_square(:white)
+# p b.king_coord(:white)
 # puts b.king_checked?(:white)
 # puts b.king_checked?(:black)
 # p b.all_attacks(:black)

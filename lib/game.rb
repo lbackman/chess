@@ -125,15 +125,15 @@ class Game
   end
 
   def long_castle(color)
-    temp_rook = board.board[board.rook_square(color, :long)].piece
-    board.board[board.rook_square(color, :long)].piece = nil
-    board.board[board.castle_square1(color, :long)].piece = temp_rook
+    temp_rook = board.board[board.rook_coord(color, :long)].piece
+    board.board[board.rook_coord(color, :long)].piece = nil
+    board.board[board.castle_coord1(color, :long)].piece = temp_rook
   end
 
   def short_castle(color)
-    temp_rook = board.board[board.rook_square(color, :short)].piece
-    board.board[board.rook_square(color, :short)].piece = nil
-    board.board[board.castle_square1(color, :short)].piece = temp_rook
+    temp_rook = board.board[board.rook_coord(color, :short)].piece
+    board.board[board.rook_coord(color, :short)].piece = nil
+    board.board[board.castle_coord1(color, :short)].piece = temp_rook
   end
 end
 
