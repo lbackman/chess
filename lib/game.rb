@@ -1,8 +1,8 @@
 require_relative 'board'
-require_relative 'game_input'
+require_relative 'input'
 
 class Game
-  include GameInput
+  include Input
   attr_reader :board, :current_player, :next_player
   def initialize(players: [nil, nil], board: nil)
     @player_1       = players.first

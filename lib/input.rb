@@ -1,6 +1,6 @@
 require 'io/console'
 
-module GameInput
+module Input
   def handle_direction_input
     case $stdin.getch
     when 'A' then board.change_rank(1)
