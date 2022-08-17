@@ -116,7 +116,7 @@ module Pieces
     end
 
     def movements
-      { move: UP_DOWN, attack: DIAGONALS }
+      { move: UP_DOWN, capture: DIAGONALS }
     end
 
     def vectors

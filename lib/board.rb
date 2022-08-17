@@ -85,22 +85,30 @@ class Board
 
   def pawn_attacks(file:, rank:, pawn:)
     attacked = []
+    pawn_moves(file:, rank:, pawn:, arr: attacked)
+    pawn_captures(file:, rank:, pawn:, arr: attacked)
+    attacked.reject { |square| square.piece_color == pawn.color }
+      .map { |s| [s.file, s.rank] }
+  end
+
+  def pawn_moves(file:, rank:, pawn:, arr:)
     pawn.vectors[:move].each do |vector|
       i = 1
       while i <= pawn.range && add_square(file, rank, vector, i).piece.nil?
-        attacked << add_square(file, rank, vector, i)
+        arr << add_square(file, rank, vector, i)
         i += 1
       end
     end
-    pawn.vectors[:attack].each do |vector|
+  end
+
+  def pawn_captures(file:, rank:, pawn:, arr:)
+    pawn.vectors[:capture].each do |vector|
       dest = add_square(file, rank, vector, 1)
       ep_capture = ep_square(dest, pawn)&.piece if dest
       if dest&.piece || ep_capture&.ep_vulnerable?(dest.rank - pawn.direction)
-        attacked << add_square(file, rank, vector, 1)
+        arr << add_square(file, rank, vector, 1)
       end
     end
-    attacked.reject { |square| square.piece_color == pawn.color }
-      .map { |s| [s.file, s.rank] }
   end
 
   def add_square(file, rank, vector, range)
