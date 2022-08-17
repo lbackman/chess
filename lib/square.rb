@@ -33,6 +33,14 @@ class Square
     piece&.color
   end
 
+  def piece_moved
+    piece&.times_moved
+  end
+
+  def legal_piece_moves
+    piece&.available_moves
+  end
+
   def upper_lower_third
     "\u001b[48;5;#{choose_color}m     \u001b[0m"
   end

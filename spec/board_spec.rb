@@ -8,11 +8,13 @@ SqrDbl = Struct.new(:file, :rank, :piece, :marked, keyword_init: true) do
 end
 
 class PieceDbl
-  attr_reader :color
-  attr_accessor :times_moved
+  attr_reader :color, :name
+  attr_accessor :times_moved, :available_moves
   def initialize(color)
     @color = color
+    @name = ''
     @times_moved = 0
+    @available_moves = []
   end
 end
 
@@ -179,6 +181,88 @@ RSpec.describe Board do
 
     it 'black king is not in check' do
       expect(b.king_checked?(:black)).to be_falsey
+    end
+  end
+
+  describe '#castling_allowed?' do
+    subject(:c_board) { described_class.new(square: Square) }
+    let(:w_king)      { PieceDbl.new(:white) } 
+    let(:w_rook1)     { PieceDbl.new(:white) }
+    let(:w_rook2)     { PieceDbl.new(:white) }
+    let(:b_queen)     { PieceDbl.new(:black) }
+    let(:w_knight)    { PieceDbl.new(:white) }
+
+    context 'when all conditions are met' do
+
+      before do
+        allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
+        allow(w_rook2).to receive(:available_moves).and_return([[6, 1]])
+        allow(w_king).to receive(:name).and_return('king')
+      end
+
+      it 'white king can long castle' do
+        c_board.board[[5, 1]].piece = w_king
+        c_board.board[[1, 1]].piece = w_rook1
+        long_castle_rights = c_board.castling_allowed?(:white, :long)
+        expect(long_castle_rights).to be_truthy
+      end
+
+      it 'white king can short castle' do
+        c_board.board[[5, 1]].piece = w_king
+        c_board.board[[8, 1]].piece = w_rook2
+        short_castle_rights = c_board.castling_allowed?(:white, :short)
+        expect(short_castle_rights).to be_truthy
+      end
+    end
+
+    context 'when the king or rook has moved at least once' do
+      before do
+        allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
+        w_rook1.times_moved = 2
+        allow(w_king).to receive(:name).and_return('king')
+      end
+
+      it 'white king can not castle' do
+        c_board.board[[5, 1]].piece = w_king
+        c_board.board[[1, 1]].piece = w_rook1
+        long_castle_rights = c_board.castling_allowed?(:white, :long)
+        expect(long_castle_rights).to be_falsey
+      end
+    end
+
+    context 'when the king is in check' do
+      before do
+        allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
+        allow(b_queen).to receive(:available_moves).and_return([[5, 1]])
+        allow(c_board).to receive(:king_checked?).with(:white).and_return(true)
+        allow(w_king).to receive(:name).and_return('king')
+      end
+
+      it 'white king can not castle' do
+        c_board.board[[5, 1]].piece = w_king
+        c_board.board[[1, 1]].piece = w_rook1
+        c_board.board[[5, 4]].piece = b_queen
+        long_castle_rights = c_board.castling_allowed?(:white, :long)
+        expect(long_castle_rights).to be_falsey
+      end
+    end
+
+    context 'when the square the king must move over is attacked' do
+      before do
+        allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
+        allow(b_queen).to receive(:available_moves).and_return([[6, 1]])
+        allow(c_board).to receive(:castle_square_attacked?).with(:white, :long).and_return(true)
+        allow(c_board).to receive(:king_checked?).with(:white).and_return(false)
+        allow(w_king).to receive(:name).and_return('king')
+      end
+
+      it 'white king can not castle' do
+        c_board.board[[5, 1]].piece = w_king
+        c_board.board[[1, 1]].piece = w_rook1
+        c_board.board[[6, 4]].piece = b_queen
+        long_castle_rights = c_board.castling_allowed?(:white, :long)
+        expect(long_castle_rights).to be_falsey
+      end
     end
   end
 end

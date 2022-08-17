@@ -177,11 +177,32 @@ class Board
   def promotion(destination, pawn)
     destination.piece = Pieces::Queen.new(pawn.color)
   end
+
+  def castling_allowed?(color, type)
+    !king_checked?(color) &&
+    board[king_square(color)]&.piece_moved == 0 &&
+    board[rook_square(color, type)]&.piece_moved == 0 &&
+    !castle_square_attacked?(color, type) &&
+    board[rook_square(color, type)].legal_piece_moves.include?(castle_square(color, type))
+  end
+
+  def rook_square(color, type)
+    {white: {long: [1, 1], short: [8, 1]}, black: {long: [1, 8], short: [8, 8]}}[color][type]
+  end
+
+  def castle_square(color, type)
+    {white: {long: [4, 1], short: [6, 1]}, black: {long: [4, 8], short: [6, 8]}}[color][type]
+  end
+
+  def castle_square_attacked?(color, type)
+    all_attacks(other_color(color))
+      .any? { |_k, v| v.include?(castle_square(color, type)) }
+  end
 end
 
-# initial_board_config = Pieces.config(:white, :black)
+initial_board_config = Pieces.config(:white, :black)
 
-# b = Board.new(config: initial_board_config)
+b = Board.new(config: initial_board_config)
 # b.populate_board
 # b.change_rank
 # puts b.print_board
@@ -193,10 +214,15 @@ end
 # b.board[[1, 1]].piece = Pieces::Knight.new(:black)
 # b.board[[5, 4]].piece = Pieces::Rook.new(:white)
 # b.board[[6, 2]].piece = Pieces::King.new(:white)
+b.board[[5, 1]].piece = Pieces::King.new(:white)
 # b.board[[8, 8]].piece = Pieces::King.new(:black)
 # b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
 # b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
 # b.board[[8, 4]].piece = Pieces::Rook.new(:white)
+b.board[[8, 1]].piece = Pieces::Rook.new(:white)
+b.board[[1, 1]].piece = Pieces::Rook.new(:white)
+# b.board[[2, 1]].piece = Pieces::Knight.new(:white)
+# b.board[[7, 5]].piece = Pieces::Rook.new(:black)
 # b.board[[7, 5]].piece = Pieces::Pawn.new(:black)
 # b.print_board
 # p b.attacks(file: 8, rank: 1)
@@ -208,5 +234,9 @@ end
 # p b.all_attacks(:black)
 # b.set_all_available_moves(:black)
 # b.set_all_available_moves(:white)
+# b.board[[1,1]].piece.times_moved = 0
+# b.print_board
 # p b.board[[6, 2]].piece.available_moves
 # p b.all_pawns(:white)
+# p b.castling_allowed?(:white, :long)
+# p b.castling_allowed?(:white, :short)
