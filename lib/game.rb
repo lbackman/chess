@@ -104,7 +104,7 @@ class Game
     when 'pawn'
       special_pawn_moves(start, start_piece, destination, captured_piece)
     when 'king'
-      castling(start, destination)
+      castling(start, start_piece.color, destination)
     end
   end
 
@@ -116,7 +116,24 @@ class Game
     end
   end
 
-  def castling(start, destination)
+  def castling(start, color, destination)
+    if start.file - destination.file == 2
+      long_castle(color)
+    elsif start.file - destination.file == -2
+      short_castle(color)
+    end
+  end
+
+  def long_castle(color)
+    temp_rook = board.board[board.rook_square(color, :long)].piece
+    board.board[board.rook_square(color, :long)].piece = nil
+    board.board[board.castle_square1(color, :long)].piece = temp_rook
+  end
+
+  def short_castle(color)
+    temp_rook = board.board[board.rook_square(color, :short)].piece
+    board.board[board.rook_square(color, :short)].piece = nil
+    board.board[board.castle_square1(color, :short)].piece = temp_rook
   end
 end
 

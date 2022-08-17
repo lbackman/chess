@@ -60,8 +60,15 @@ class Board
     return [] if board[[file, rank]].piece.nil?
 
     piece = board[[file, rank]].piece
-    return pawn_attacks(file:, rank:, pawn: piece) if piece.name == 'pawn'
-
+    case piece.name
+    when 'pawn'
+      pawn_attacks(file:, rank:, pawn: piece)
+    else 
+      default_attacks(file:, rank:, piece:)
+    end
+  end
+    
+  def default_attacks(file:, rank:, piece:)
     attacked = []
     piece.vectors.each do |vector|
       sub = []
@@ -73,7 +80,6 @@ class Board
       sub.each { |el| attacked << el }
     end
     attacked.reject { |square| square.piece_color == piece.color }
-      # .map(&:to_s)
       .map { |s| [s.file, s.rank] }
   end
 
@@ -94,7 +100,6 @@ class Board
       end
     end
     attacked.reject { |square| square.piece_color == pawn.color }
-      # .map(&:to_s)
       .map { |s| [s.file, s.rank] }
   end
 
@@ -147,9 +152,19 @@ class Board
     piece.available_moves = available
   end
 
+  def set_available_castles(color)
+    king = board[king_square(color)].piece
+    available = []
+    [:long, :short].each do |type|
+      available << castle_square2(color, type) if castling_allowed?(color, type)
+    end
+    available.each { |move| king.available_moves << move }
+  end
+
   def set_all_available_moves(color)
     attack_hash = all_attacks(color)
     attack_hash.each { |k, v| set_available_moves(k.last, k.first, v) }
+    set_available_castles(color)
   end
 
   def king_checked?(color)
@@ -182,21 +197,27 @@ class Board
     !king_checked?(color) &&
     board[king_square(color)]&.piece_moved == 0 &&
     board[rook_square(color, type)]&.piece_moved == 0 &&
-    !castle_square_attacked?(color, type) &&
-    board[rook_square(color, type)].legal_piece_moves.include?(castle_square(color, type))
+    !any_castle_square_attacked?(color, type) &&
+    board[rook_square(color, type)].legal_piece_moves.include?(castle_square1(color, type))
   end
 
   def rook_square(color, type)
     {white: {long: [1, 1], short: [8, 1]}, black: {long: [1, 8], short: [8, 8]}}[color][type]
   end
 
-  def castle_square(color, type)
+  def castle_square1(color, type)
     {white: {long: [4, 1], short: [6, 1]}, black: {long: [4, 8], short: [6, 8]}}[color][type]
   end
 
-  def castle_square_attacked?(color, type)
-    all_attacks(other_color(color))
-      .any? { |_k, v| v.include?(castle_square(color, type)) }
+  def castle_square2(color, type)
+    {white: {long: [3, 1], short: [7, 1]}, black: {long: [3, 8], short: [7, 8]}}[color][type]
+  end
+
+  def any_castle_square_attacked?(color, type)
+    squares = [castle_square1(color, type), castle_square2(color, type)]
+    squares.any? do |square|
+      all_attacks(other_color(color)).any? { |_k, v| v.include?(square) }
+    end
   end
 end
 
@@ -214,13 +235,13 @@ b = Board.new(config: initial_board_config)
 # b.board[[1, 1]].piece = Pieces::Knight.new(:black)
 # b.board[[5, 4]].piece = Pieces::Rook.new(:white)
 # b.board[[6, 2]].piece = Pieces::King.new(:white)
-b.board[[5, 1]].piece = Pieces::King.new(:white)
+# b.board[[5, 1]].piece = Pieces::King.new(:white)
 # b.board[[8, 8]].piece = Pieces::King.new(:black)
 # b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
 # b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
 # b.board[[8, 4]].piece = Pieces::Rook.new(:white)
-b.board[[8, 1]].piece = Pieces::Rook.new(:white)
-b.board[[1, 1]].piece = Pieces::Rook.new(:white)
+# b.board[[8, 1]].piece = Pieces::Rook.new(:white)
+# b.board[[1, 1]].piece = Pieces::Rook.new(:white)
 # b.board[[2, 1]].piece = Pieces::Knight.new(:white)
 # b.board[[7, 5]].piece = Pieces::Rook.new(:black)
 # b.board[[7, 5]].piece = Pieces::Pawn.new(:black)

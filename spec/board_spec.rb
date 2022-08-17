@@ -247,11 +247,11 @@ RSpec.describe Board do
       end
     end
 
-    context 'when the square the king must move over is attacked' do
+    context 'when a square the king moves over is attacked' do
       before do
         allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
         allow(b_queen).to receive(:available_moves).and_return([[6, 1]])
-        allow(c_board).to receive(:castle_square_attacked?).with(:white, :long).and_return(true)
+        allow(c_board).to receive(:any_castle_square_attacked?).with(:white, :long).and_return(true)
         allow(c_board).to receive(:king_checked?).with(:white).and_return(false)
         allow(w_king).to receive(:name).and_return('king')
       end
