@@ -78,14 +78,14 @@ class Game
       board.set_all_available_moves(current_player.color)
       play_round(current_player.color)
       board.set_all_available_moves(next_player.color)
-      break if endgame?
+      break if game_over?
 
       change_player!
     end
     puts checkmate? ? "Checkmate!" : "Stalemate"
   end
 
-  def endgame?
+  def game_over?
     checkmate? || stalemate?
   end
 
