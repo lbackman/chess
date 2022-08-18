@@ -136,6 +136,14 @@ class Board
   def squares(color)
     board.select { |_k, v| v.piece_color == color }
   end
+
+  def choosable_squares(color)
+    squares(color).select { |_k, v| !v.legal_piece_moves&.empty? }.values
+  end
+
+  def choosable_destinations(square)
+    square.legal_piece_moves.each_with_object([]) { |mv, o| o << board[mv] }
+  end
   
   def king_coord(color)
     squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
@@ -241,9 +249,9 @@ class Board
   end
 end
 
-initial_board_config = Pieces.config(:white, :black)
+# initial_board_config = Pieces.config(:white, :black)
 
-b = Board.new(config: initial_board_config)
+# b = Board.new(config: initial_board_config)
 # b.populate_board
 # b.change_rank
 # puts b.print_board
@@ -281,3 +289,4 @@ b = Board.new(config: initial_board_config)
 # p b.all_pawns(:white)
 # p b.castling_allowed?(:white, :long)
 # p b.castling_allowed?(:white, :short)
+# puts b.choosable_squares(:white)

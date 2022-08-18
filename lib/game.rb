@@ -2,7 +2,8 @@ require_relative 'board'
 require_relative 'input'
 
 class Game
-  include Input
+  # include Input::HumanPlayer
+  
   attr_reader :board, :current_player, :next_player
   def initialize(players: [nil, nil], board: nil)
     @player_1       = players.first
@@ -16,39 +17,12 @@ class Game
     @current_player, @next_player = next_player, current_player
   end
 
-  def choose_start
-    start = board.current_square
-    piece = start.piece
-    return start if piece&.available_moves && !piece.available_moves.empty?
-  end
-
-  def choose_destination(start)
-    destination = board.current_square
-    piece = start.piece
-    return destination if piece.available_moves.include?(destination.to_a)
-  end
-
   def move_piece(start, destination)
     board.move_piece(start.to_a, destination.to_a)
   end
 
-  def get_start_square(color)
-    loop do
-      next until handle_input
-      start = choose_start
-      return start if !start.nil? && start.piece_color == color
-    end
-  end
-
-  def get_destination_square(start)
-    loop do
-      next until handle_input
-      destination = choose_destination(start)
-      return destination unless destination.nil?
-    end
-  end
-
   def play_round(color)
+    extend current_player.type # not working with two different player types...
     display
     start = get_start_square(color)
     start_piece = start.piece
@@ -125,15 +99,15 @@ class Game
   end
 end
 
-Player = Struct.new(:color, keyword_init: true)
-p1 = Player.new(color: :white)
-p2 = Player.new(color: :black)
+Player = Struct.new(:color, :type, keyword_init: true)
+p1 = Player.new(color: :white, type: Input::ComputerPlayer)
+p2 = Player.new(color: :black, type: Input::ComputerPlayer)
 
 initial_board_config = Pieces.config(:white, :black)
 b = Board.new(config: initial_board_config)
 b.populate_board
 # b.set_all_available_moves(:white)
-b.change_rank
+# b.change_rank
 g = Game.new(players: [p1, p2], board: b)
 # g.play_round(:black)
 g.play_chess
