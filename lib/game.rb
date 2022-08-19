@@ -1,5 +1,6 @@
 require_relative 'board'
-require_relative 'input'
+require_relative 'human_player'
+require_relative 'computer_player'
 
 class Game
   # include Input::HumanPlayer
@@ -22,11 +23,10 @@ class Game
   end
 
   def play_round(color)
-    extend current_player.type # not working with two different player types...
     display
-    start = get_start_square(color)
+    start = current_player.get_start_square(self, board, color)
     start_piece = start.piece
-    destination = get_destination_square(start)
+    destination = current_player.get_destination_square(self, board, start)
     captured_piece = destination.piece
     move_piece(start, destination)
     special_move(start, start_piece, destination, captured_piece)
@@ -100,8 +100,8 @@ class Game
 end
 
 Player = Struct.new(:color, :type, keyword_init: true)
-p1 = Player.new(color: :white, type: Input::ComputerPlayer)
-p2 = Player.new(color: :black, type: Input::ComputerPlayer)
+p1 = HumanPlayer.new(color: :white)#, type: Input::ComputerPlayer)
+p2 = ComputerPlayer.new(color: :black)#, type: Input::ComputerPlayer)
 
 initial_board_config = Pieces.config(:white, :black)
 b = Board.new(config: initial_board_config)
