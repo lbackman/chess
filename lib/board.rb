@@ -136,14 +136,6 @@ class Board
   def squares(color)
     board.select { |_k, v| v.piece_color == color }
   end
-
-  def choosable_squares(color)
-    squares(color).select { |_k, v| !v.legal_piece_moves&.empty? }.values
-  end
-
-  def choosable_destinations(square)
-    square.legal_piece_moves.each_with_object([]) { |mv, o| o << board[mv] }
-  end
   
   def king_coord(color)
     squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
