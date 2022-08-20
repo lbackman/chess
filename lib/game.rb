@@ -92,16 +92,16 @@ class Game
 
   def castling(start, color, destination)
     if start.file - destination.file == 2
-      board.long_castle(color)
+      board.castle(color, :long)
     elsif start.file - destination.file == -2
-      board.short_castle(color)
+      board.castle(color, :short)
     end
   end
 end
 
 Player = Struct.new(:color, :type, keyword_init: true)
 p1 = HumanPlayer.new(color: :white)#, type: Input::ComputerPlayer)
-p2 = ComputerPlayer.new(color: :black)#, type: Input::ComputerPlayer)
+p2 = HumanPlayer.new(color: :black)#, type: Input::ComputerPlayer)
 
 initial_board_config = Pieces.config(:white, :black)
 b = Board.new(config: initial_board_config)

@@ -236,16 +236,10 @@ class Board
       .any? { |sq| sq.piece_name == 'pawn' && sq.piece_color == other_color(color) }
   end
 
-  def long_castle(color)
-    temp_rook = board[rook_coord(color, :long)].piece
-    board[rook_coord(color, :long)].piece = nil
-    board[castle_coord1(color, :long)].piece = temp_rook
-  end
-
-  def short_castle(color)
-    temp_rook = board[rook_coord(color, :short)].piece
-    board[rook_coord(color, :short)].piece = nil
-    board[castle_coord1(color, :short)].piece = temp_rook
+  def castle(color, type)
+    temp_rook = board[rook_coord(color, type)].piece
+    board[rook_coord(color, type)].piece = nil
+    board[castle_coord1(color, type)].piece = temp_rook
   end
 end
 
