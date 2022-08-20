@@ -5,11 +5,11 @@ class ComputerPlayer
     @color = color
   end
 
-  def get_start_square(_game, board)
+  def get_start_square(_game = nil, board)
     choosable_squares(color, board).sample
   end
 
-  def get_destination_square(_game, board, start)
+  def get_destination_square(_game = nil, board, start)
     sleep(0.1)
     choosable_destinations(start, board).sample
   end
