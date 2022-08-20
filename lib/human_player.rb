@@ -32,8 +32,7 @@ class HumanPlayer
 
   def choose_start(board)
     start = board.current_square
-    piece = start.piece
-    return start if piece&.available_moves && !piece.available_moves.empty?
+    return start if start&.legal_piece_moves && !start.legal_piece_moves.empty?
   end
 
   def choose_destination(board, start)
@@ -42,7 +41,7 @@ class HumanPlayer
     return destination if piece.available_moves.include?(destination.to_a)
   end
 
-  def get_start_square(game, board, color)
+  def get_start_square(game, board)
     loop do
       next until handle_input(game, board)
       start = choose_start(board)

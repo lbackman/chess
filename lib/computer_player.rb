@@ -5,7 +5,7 @@ class ComputerPlayer
     @color = color
   end
 
-  def get_start_square(_game, board, color)
+  def get_start_square(_game, board)
     choosable_squares(color, board).sample
   end
 

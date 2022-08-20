@@ -24,7 +24,7 @@ class Game
 
   def play_round(color)
     display
-    start = current_player.get_start_square(self, board, color)
+    start = current_player.get_start_square(self, board)
     start_piece = start.piece
     destination = current_player.get_destination_square(self, board, start)
     captured_piece = destination.piece
