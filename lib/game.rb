@@ -1,10 +1,12 @@
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'computer_player'
+require_relative 'save'
 require_relative 'messages'
 
 class Game
   include Messages
+  include Save
   
   attr_reader :board, :current_player, :next_player
   attr_accessor :move_message, :turn_message, :check_message, :end_message

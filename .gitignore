@@ -10,6 +10,7 @@
 /test/version_tmp/
 /tmp/
 outline.txt
+/saves/
 
 # Used by dotenv library to load environment variables.
 # .env
