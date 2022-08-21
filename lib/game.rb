@@ -41,13 +41,14 @@ class Game
   end
 
   def display
-    system('clear')
+    # system('clear')
     # puts "\n\n"
     board.print_board
-    # puts "\n\n"
+    puts "\n\n"
   end
 
   def play_chess
+    system('clear')
     loop do
       board.set_all_available_moves(current_player.color)
       play_round(current_player.color)

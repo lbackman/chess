@@ -124,13 +124,20 @@ class Board
   end
 
   def print_rank(rank)
-    print_upper_lower_rank(rank) + "\n" +
-    print_middle_rank(rank)      + "\n" +
-    print_upper_lower_rank(rank)
+    " #{print_upper_lower_rank(rank)} \n" +
+    "#{rank}#{print_middle_rank(rank)}\n"      +
+    " #{print_upper_lower_rank(rank)} "
+  end
+
+  def print_files
+    "   a    b    c    d    e    f    g    h    "
   end
 
   def print_board
+    puts "\033[30A"
     puts 8.downto(1).map { |i| print_rank(i) }.join("\n")
+    puts print_files
+    
   end
 
   def squares(color)
