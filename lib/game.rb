@@ -15,9 +15,9 @@ class Game
 
     @current_player = @player_1
     @next_player    = @player_2
-    @move_message   = " " * 80
-    @turn_message   = " " * 80
-    @check_message  = " " * 80
+    @move_message   = ''
+    @turn_message   = ''
+    @check_message  = ''
   end
 
   def change_player!
@@ -35,19 +35,23 @@ class Game
     destination = current_player.get_destination_square(self, board, start)
     captured_piece = destination.piece
     move_piece(start, destination)
+    after_move(start_piece, start, destination, captured_piece, color)
+  end
+
+  def after_move(start_piece, start, destination, captured_piece, color)
     clear_messages
     @move_message = movements_message(start_piece, start, destination, captured_piece)
     @turn_message = whose_turn(color)
-    @check_message = check(color)
     special_move(start, start_piece, destination, captured_piece)
+    @check_message = check(color)
     increment_ep_count(color)
     display
   end
 
   def clear_messages
-    @move_message  = " " * 80
-    @turn_message  = " " * 80
-    @check_message = " " * 80
+    @move_message  = "\033[K" # Erase to end of line
+    @turn_message  = "\033[K"
+    @check_message = "\033[K"
     display
   end
 
@@ -132,7 +136,7 @@ end
 
 Player = Struct.new(:color, :type, keyword_init: true)
 p1 = HumanPlayer.new(color: :white)#, type: Input::ComputerPlayer)
-p2 = HumanPlayer.new(color: :black)#, type: Input::ComputerPlayer)
+p2 = ComputerPlayer.new(color: :black)#, type: Input::ComputerPlayer)
 
 initial_board_config = Pieces.config(:white, :black)
 b = Board.new(config: initial_board_config)
