@@ -184,6 +184,31 @@ RSpec.describe Board do
     end
   end
 
+  describe '#en_passant' do
+    subject(:ep_board) { described_class.new(square: SqrDbl) }
+    let(:square) { double('square') }
+    let(:dest) { double('square') }
+    let(:ep_pawn) { double('piece') }
+    before { allow(ep_board).to receive(:ep_square).and_return(square) }
+
+    it 'sends message to ep_square' do
+      expect(square).to receive(:piece=)
+      ep_board.en_passant(dest, ep_pawn)
+    end
+  end
+
+  describe '#promotion' do
+    subject(:p_board) { described_class.new(square: SqrDbl) }
+    let(:dest) { double('square') }
+    let(:pawn) { double('piece') }
+    before { allow(pawn).to receive(:color) }
+
+    it 'sends message to destination' do
+      expect(dest).to receive(:piece=)
+      p_board.promotion(dest, pawn)
+    end
+  end
+
   describe '#castling_allowed?' do
     subject(:c_board) { described_class.new(square: Square) }
     let(:w_king)      { PieceDbl.new(:white) } 
