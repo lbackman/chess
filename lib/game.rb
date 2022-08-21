@@ -1,17 +1,23 @@
 require_relative 'board'
 require_relative 'human_player'
 require_relative 'computer_player'
+require_relative 'messages'
 
 class Game
-  # include Input::HumanPlayer
+  include Messages
   
   attr_reader :board, :current_player, :next_player
+  attr_accessor :move_message, :turn_message, :check_message, :end_message
   def initialize(players: [nil, nil], board: nil)
     @player_1       = players.first
     @player_2       = players.last
     @board          = board
+
     @current_player = @player_1
     @next_player    = @player_2
+    @move_message   = " " * 80
+    @turn_message   = " " * 80
+    @check_message  = " " * 80
   end
 
   def change_player!
@@ -29,8 +35,19 @@ class Game
     destination = current_player.get_destination_square(self, board, start)
     captured_piece = destination.piece
     move_piece(start, destination)
+    clear_messages
+    @move_message = movements_message(start_piece, start, destination, captured_piece)
+    @turn_message = whose_turn(color)
+    @check_message = check(color)
     special_move(start, start_piece, destination, captured_piece)
     increment_ep_count(color)
+    display
+  end
+
+  def clear_messages
+    @move_message  = " " * 80
+    @turn_message  = " " * 80
+    @check_message = " " * 80
     display
   end
 
@@ -41,10 +58,10 @@ class Game
   end
 
   def display
-    # system('clear')
-    # puts "\n\n"
     board.print_board
-    puts "\n\n"
+    puts move_message
+    puts turn_message
+    puts check_message
   end
 
   def play_chess
@@ -57,7 +74,8 @@ class Game
 
       change_player!
     end
-    puts checkmate? ? "Checkmate!" : "Stalemate"
+    puts checkmate? ? mate_message : stalemate_message
+    puts win_message(current_player.color)
   end
 
   def game_over?
@@ -85,17 +103,21 @@ class Game
 
   def special_pawn_moves(start, start_piece, destination, captured_piece)
     if (destination.file - start.file) ** 2 == 1 && captured_piece.nil?
+      @move_message = ep_message(start, destination, start_piece, captured_piece)
       board.en_passant(destination, start_piece)
     elsif destination.rank == 8 || destination.rank == 1
       board.promotion(destination, start_piece)
+      @move_message = promotion_message(move_message, start_piece.color)
     end
   end
 
   def castling(start, color, destination)
     if start.file - destination.file == 2
       board.castle(color, :long)
+      @move_message = long_castle_message(destination.piece)
     elsif start.file - destination.file == -2
       board.castle(color, :short)
+      @move_message = short_castle_message(destination.piece)
     end
   end
 end
