@@ -67,15 +67,23 @@ class Game
   def play_chess
     system('clear')
     loop do
-      board.set_all_available_moves(current_player.color)
-      play_round(current_player.color)
-      board.set_all_available_moves(next_player.color)
+      set_up_and_play
       break if game_over?
 
       change_player!
     end
+    end_of_game
+  end
+
+  def end_of_game
     puts checkmate? ? mate_message : stalemate_message
     puts win_message(current_player.color)
+  end
+
+  def set_up_and_play
+    board.set_all_available_moves(current_player.color)
+    play_round(current_player.color)
+    board.set_all_available_moves(next_player.color)
   end
 
   def game_over?
