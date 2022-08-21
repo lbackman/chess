@@ -205,8 +205,7 @@ class Board
     !king_checked?(color) &&
     board[king_coord(color)]&.piece_moved == 0 &&
     board[rook_coord(color, type)]&.piece_moved == 0 &&
-    !any_castle_coord_attacked?(color, type) &&
-    !pawn_can_attack_castle?(color, type) &&
+    castle_squares_unattacked?(color, type) &&
     board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
   end
 
@@ -222,16 +221,20 @@ class Board
     {white: {long: [3, 1], short: [7, 1]}, black: {long: [3, 8], short: [7, 8]}}[color][type]
   end
 
-  def any_castle_coord_attacked?(color, type)
+  def castle_squares_unattacked?(color, type)
+    !(standard_piece_attack?(color, type) || pawn_attack?(color, type))
+  end
+
+  def standard_piece_attack?(color, type)
     squares = [castle_coord1(color, type), castle_coord2(color, type)]
     squares.any? do |square|
       all_attacks(other_color(color)).any? { |_k, v| v.include?(square) }
     end
   end
 
-  def pawn_can_attack_castle?(color, type)
-    color == :white ? rank = 2 : rank = 7
-    type == :long ? range = (1..5) : range = (5..8)
+  def pawn_attack?(color, type)
+    rank = {white: 2, black: 7}[color]
+    range = {long: (1..5), short: (5..8)}[type]
     range.map { |i| board[[i, rank]] }
       .any? { |sq| sq.piece_name == 'pawn' && sq.piece_color == other_color(color) }
   end
