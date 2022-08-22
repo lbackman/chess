@@ -10,9 +10,9 @@ class Game
   
   attr_reader :board, :players
   attr_accessor :move_message, :turn_message, :check_message, :end_message
-  def initialize(players: [nil, nil], board: nil)
+  def initialize(players: [nil, nil])
     @players        = players
-    @board          = board
+    @board          = set_up_board
 
     @move_message   = ''
     @turn_message   = ''
@@ -29,6 +29,12 @@ class Game
 
   def change_player!
     @players.rotate!
+  end
+
+  def set_up_board
+    board = Board.new(config: Pieces.config(:white, :black))
+    board.populate_board
+    board
   end
 
   def move_piece(start, destination)
@@ -142,15 +148,15 @@ class Game
 end
 
 
-p1 = HumanPlayer.new(color: :white)#, type: Input::ComputerPlayer)
-p2 = ComputerPlayer.new(color: :black)#, type: Input::ComputerPlayer)
+# p1 = HumanPlayer.new(color: :white)
+# p2 = ComputerPlayer.new(color: :black)
 
-initial_board_config = Pieces.config(:white, :black)
-b = Board.new(config: initial_board_config)
-b.populate_board
-g = Game.new(players: [p1, p2], board: b)
+# initial_board_config = Pieces.config(:white, :black)
+# b = Board.new(config: initial_board_config)
+# b.populate_board
+# g = Game.new(players: [p1, p2], board: b)
 
-g.play_chess
+# g.play_chess
 
 # p g.choose_start
 
