@@ -11,6 +11,7 @@
 /tmp/
 outline.txt
 /saves/
+savefile.yaml
 
 # Used by dotenv library to load environment variables.
 # .env

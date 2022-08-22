@@ -84,5 +84,3 @@ class Chess
                   ComputerPlayer.new(color: :black)]).play_chess
   end
 end
-
-Chess.new.main_menu
