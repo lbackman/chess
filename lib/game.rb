@@ -8,22 +8,27 @@ class Game
   include Messages
   include Save
   
-  attr_reader :board, :current_player, :next_player
+  attr_reader :board, :players
   attr_accessor :move_message, :turn_message, :check_message, :end_message
   def initialize(players: [nil, nil], board: nil)
-    @player_1       = players.first
-    @player_2       = players.last
+    @players        = players
     @board          = board
 
-    @current_player = @player_1
-    @next_player    = @player_2
     @move_message   = ''
     @turn_message   = ''
     @check_message  = ''
   end
 
+  def current_player
+    players.first
+  end
+
+  def next_player
+    players.last
+  end
+
   def change_player!
-    @current_player, @next_player = next_player, current_player
+    @players.rotate!
   end
 
   def move_piece(start, destination)
@@ -136,18 +141,17 @@ class Game
   end
 end
 
-Player = Struct.new(:color, :type, keyword_init: true)
+
 p1 = HumanPlayer.new(color: :white)#, type: Input::ComputerPlayer)
 p2 = ComputerPlayer.new(color: :black)#, type: Input::ComputerPlayer)
 
 initial_board_config = Pieces.config(:white, :black)
 b = Board.new(config: initial_board_config)
 b.populate_board
-# b.set_all_available_moves(:white)
-# b.change_rank
 g = Game.new(players: [p1, p2], board: b)
-# g.play_round(:black)
+
 g.play_chess
+
 # p g.choose_start
 
 # implement method that says "#{color} king in check" if in check
