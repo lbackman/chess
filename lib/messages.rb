@@ -26,7 +26,7 @@ module Messages
 
 
       [N] >> New game
-      [L] >> Load game
+      #{load_game_message}
       [Q] >> Exit game
 
 
@@ -49,6 +49,10 @@ module Messages
     [Q] >> Exit game
 
     NEWGAME
+  end
+
+  def load_game_message
+    saved_games.empty? ? '' : '[L] >> Load game'
   end
 
   def invalid_message

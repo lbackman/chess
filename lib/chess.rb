@@ -45,7 +45,7 @@ class Chess
     if saved_games.keys.include?(name)
       saved_games[name].play_chess
     else
-      puts 'Not found!'
+      puts not_found
       choose_saved_game
     end
   end
