@@ -134,10 +134,14 @@ class Board
   end
 
   def print_board
-    puts "\033[30A"
+    puts "\033[31A"
+    puts legend
     puts 8.downto(1).map { |i| print_rank(i) }.join("\n")
     puts print_files
-    
+  end
+
+  def legend
+    "      MOVE: \u2190\u2191\u2192\u2193, SAVE: 'S', QUIT: 'Q'"
   end
 
   def squares(color)
