@@ -9,14 +9,15 @@ class Game
   include Save
   
   attr_reader :board, :players
-  attr_accessor :move_message, :turn_message, :check_message, :end_message
+  attr_accessor :move_message, :turn_message, :check_message, :end_message, :save_message
   def initialize(players: [nil, nil])
     @players        = players
     @board          = set_up_board
 
-    @move_message   = ''
+    @move_message   = 'White to move'
     @turn_message   = ''
     @check_message  = ''
+    @save_message   = ''
   end
 
   def current_player
@@ -65,6 +66,7 @@ class Game
     @move_message  = "\033[K" # Erase to end of line
     @turn_message  = "\033[K"
     @check_message = "\033[K"
+    @save_message  = "\033[K"
     display
   end
 
@@ -79,6 +81,7 @@ class Game
     puts move_message
     puts turn_message
     puts check_message
+    print save_message
   end
 
   def play_chess
