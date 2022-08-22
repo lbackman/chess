@@ -23,7 +23,7 @@ class HumanPlayer
     when "\r" then true
     when '[' then handle_direction_input(game, board)
     when "q" then exit
-    when "s" then puts Dir.getwd #game.save_game
+    when "s" then game.save_game
     when 'r' then
       puts 'resign'
       exit

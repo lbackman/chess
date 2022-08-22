@@ -1,11 +1,74 @@
 #output messages
 module Messages
-  def introduction
-    <<~INTRO
+  def logo
+    <<~LOGO
+      ██████  ██    ██ ██████  ██    ██ 
+      ██   ██ ██    ██ ██   ██  ██  ██  
+      ██████  ██    ██ ██████    ████   
+      ██   ██ ██    ██ ██   ██    ██    
+      ██   ██  ██████  ██████     ██    
+                  
+      .d8888b.   888                                 
+      d88P  Y88b 888                                 
+      888    888 888                                 
+      888        88888b.   .d88b.  .d8888b  .d8888b  
+      888        888 "88b d8P  Y8b 88K      88K      
+      888    888 888  888 88888888 "Y8888b. "Y8888b. 
+      Y88b  d88P 888  888 Y8b.          X88      X88 
+      "Y8888P"   888  888  "Y8888   88888P'  88888P' 
+    LOGO
+  end
 
-    Welcome to Ruby Chess. Please select your player types and colors.
+  def main_menu_message
+    <<~MENU
 
-    INTRO
+      #{logo}
+
+
+      [N] >> New game
+      [L] >> Load game
+      [Q] >> Exit game
+
+
+
+
+    MENU
+  end
+
+  def new_game_message
+    <<~NEWGAME
+
+    #{logo}
+
+    Choose game setup:
+
+    [1] >> Human against human
+    [2] >> Human against computer
+
+    [E] >> Back to main menu
+    [Q] >> Exit game
+
+    NEWGAME
+  end
+
+  def invalid_message
+    'Invalid input'
+  end
+
+  def games_found
+    'Games Found:'
+  end
+
+  def enter_save_file
+    'Choose saved game '
+  end
+
+  def not_found
+    'Not found'
+  end
+
+  def game_over_instructions
+    'Press [M] to go back to the main menu, to exit, press any other key'
   end
 
   def check(color)
