@@ -84,10 +84,6 @@ module Pieces
       ' '
     end
 
-    def enemy?(other_piece)
-      color != other_piece.color
-    end
-
     def ep_vulnerable?(rank)
       false
     end
