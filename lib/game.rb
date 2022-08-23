@@ -131,7 +131,7 @@ class Game
 
   def special_pawn_moves(start, start_piece, destination, captured_piece)
     if (destination.file - start.file) ** 2 == 1 && captured_piece.nil?
-      @move_message = ep_message(start, destination, start_piece, captured_piece)
+      @move_message = ep_message(start, destination, start_piece)
       board.en_passant(destination, start_piece)
     elsif destination.rank == 8 || destination.rank == 1
       board.promotion(destination, start_piece)
