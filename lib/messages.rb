@@ -113,8 +113,8 @@ module Messages
     "#{board.ep_square(destination, pawn).piece} en passant"
   end
 
-  def promotion_message(message, color)
-    message + " and promotes to #{{ white: "\u2655", black: "\u265b" }[color]}"
+  def promotion_message(message, queen)
+    message + " and promotes to #{queen}"
   end
 
   def long_castle_message(king)

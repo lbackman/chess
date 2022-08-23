@@ -135,7 +135,7 @@ class Game
       board.en_passant(destination, start_piece)
     elsif destination.rank == 8 || destination.rank == 1
       board.promotion(destination, start_piece)
-      @move_message = promotion_message(move_message, start_piece.color)
+      @move_message = promotion_message(move_message, destination.piece)
     end
   end
 
