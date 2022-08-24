@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'yaml'
 
+# saves games
 module Save
-
   SAVEFILE = 'savefile.yaml'
 
   def read_saved_games
@@ -19,7 +21,7 @@ module Save
                                        Pieces::Bishop,
                                        Pieces::Rook,
                                        Pieces::Queen,
-                                       Pieces::King] )
+                                       Pieces::King])
   rescue Errno::ENOENT
     {}
   end
@@ -37,4 +39,3 @@ module Save
     @save_message = "\033[K"
   end
 end
-  
