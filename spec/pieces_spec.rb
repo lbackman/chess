@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# spec/pieces_spec.rb
+
 require 'pieces'
 
 RSpec.shared_examples 'piece interface tests' do

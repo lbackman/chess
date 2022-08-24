@@ -1,8 +1,13 @@
+# frozen_string_literal: true
+
+# lib/pieces.rb
+
+# handles pieces, their moves, and set-up
 module Pieces
-  DIAGONALS   = [[1, 1], [-1, 1]]
-  LINES       = [[1, 0], [0, 1]]
-  UP_DOWN     = [[0, 1]]
-  KNIGHTMOVES = [[1, 2], [2, 1], [-1, 2], [-2, 1]]
+  DIAGONALS   = [[1, 1], [-1, 1]].freeze
+  LINES       = [[1, 0], [0, 1]].freeze
+  UP_DOWN     = [[0, 1]].freeze
+  KNIGHTMOVES = [[1, 2], [2, 1], [-1, 2], [-2, 1]].freeze
 
   def self.config(color1, color2)
     Hash.new(piece: nil).merge(
@@ -37,12 +42,15 @@ module Pieces
       { file: 5, rank: 8 } => { piece: Pieces::King.new(color2) },
       { file: 6, rank: 8 } => { piece: Pieces::Bishop.new(color2) },
       { file: 7, rank: 8 } => { piece: Pieces::Knight.new(color2) },
-      { file: 8, rank: 8 } => { piece: Pieces::Rook.new(color2) } )
+      { file: 8, rank: 8 } => { piece: Pieces::Rook.new(color2) }
+    )
   end
 
+  # base class
   class Piece
     attr_reader :color
     attr_accessor :times_moved, :available_moves
+
     def initialize(color)
       @color = color
       @times_moved = 0
@@ -51,8 +59,7 @@ module Pieces
       post_initialize
     end
 
-    def post_initialize
-    end
+    def post_initialize; end
 
     def name
       ''
@@ -84,7 +91,7 @@ module Pieces
       ' '
     end
 
-    def ep_vulnerable?(rank)
+    def ep_vulnerable?(*)
       false
     end
 
@@ -93,8 +100,10 @@ module Pieces
     end
   end
 
+  # pawn class
   class Pawn < Piece
     attr_accessor :ep_counter
+
     def post_initialize
       @ep_counter = 0
     end
@@ -124,7 +133,7 @@ module Pieces
     end
 
     def ep_vulnerable?(rank)
-      times_moved == 1 && ep_counter == 1 && (rank == 4 || rank == 5)
+      times_moved == 1 && ep_counter == 1 && [4, 5].include?(rank)
     end
 
     def range
@@ -132,6 +141,7 @@ module Pieces
     end
   end
 
+  # knight class
   class Knight < Piece
     def name
       'knight'
@@ -150,6 +160,7 @@ module Pieces
     end
   end
 
+  # bishop class
   class Bishop < Piece
     def name
       'bishop'
@@ -164,6 +175,7 @@ module Pieces
     end
   end
 
+  # rook class
   class Rook < Piece
     def name
       'rook'
@@ -178,6 +190,7 @@ module Pieces
     end
   end
 
+  # queen class
   class Queen < Piece
     def name
       'queen'
@@ -188,6 +201,7 @@ module Pieces
     end
   end
 
+  # king class
   class King < Piece
     def name
       'king'
