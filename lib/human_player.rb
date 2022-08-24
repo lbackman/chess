@@ -12,7 +12,7 @@ class HumanPlayer
     @color = color
   end
 
-  def handle_direction_input(game, board)
+  def handle_direction_input(board, game)
     case $stdin.getch
     when 'A' then board.change_rank(1)
     when 'B' then board.change_rank(-1)
@@ -23,10 +23,10 @@ class HumanPlayer
     false
   end
 
-  def handle_input(game, board)
+  def handle_input(board, game)
     case $stdin.getch
     when "\r" then true
-    when '[' then handle_direction_input(game, board)
+    when '[' then handle_direction_input(board, game)
     when 'q' then exit
     when 's' then game.save_game
     when 'r'
@@ -46,17 +46,17 @@ class HumanPlayer
     return destination if piece.available_moves.include?(destination.to_a)
   end
 
-  def get_start_square(game, board)
+  def get_start_square(board, game)
     loop do
-      next until handle_input(game, board)
+      next until handle_input(board, game)
       start = choose_start(board)
       return start if !start.nil? && start.piece_color == color
     end
   end
 
-  def get_destination_square(game, board, start)
+  def get_destination_square(board, start, game)
     loop do
-      next until handle_input(game, board)
+      next until handle_input(board, game)
       destination = choose_destination(board, start)
       return destination unless destination.nil?
     end

@@ -44,9 +44,9 @@ class Game
 
   def play_round(color)
     display
-    start = current_player.get_start_square(self, board)
+    start = current_player.get_start_square(board, self)
     start_piece = start.piece
-    destination = current_player.get_destination_square(self, board, start)
+    destination = current_player.get_destination_square(board, start, self)
     captured_piece = destination.piece
     move_piece(start, destination)
     after_move(start_piece, start, destination, captured_piece, color)
