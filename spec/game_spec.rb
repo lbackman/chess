@@ -1,8 +1,12 @@
+# frozen_string_literal: true
+
+# spec/game_spec.rb
+
 require 'game'
 
 RSpec.describe Game do
   describe '#move_piece' do
-    subject(:new_game) { described_class.new(players: ['p1', 'p2'])}
+    subject(:new_game) { described_class.new(players: %w[p1 p2]) }
     let(:board) { double('board') }
     let(:start) { double('square') }
     let(:destination) { double('square') }
