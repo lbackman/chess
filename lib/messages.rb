@@ -112,6 +112,10 @@ module Messages
     "#{{ white: :black, black: :white }[color].to_s.capitalize} to move"
   end
 
+  def erase_message
+    "\033[K"
+  end
+
   def ep_message(start, destination, pawn)
     "#{pawn} moves from #{start} to #{destination} and takes " \
       "#{board.ep_square(destination, pawn).piece} en passant"

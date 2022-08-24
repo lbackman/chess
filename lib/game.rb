@@ -100,10 +100,10 @@ class Game
   end
 
   def clear_messages
-    @move_message  = "\033[K" # Erase to end of line
-    @turn_message  = "\033[K"
-    @check_message = "\033[K"
-    @save_message  = "\033[K"
+    @move_message  = erase_message
+    @turn_message  = erase_message
+    @check_message = erase_message
+    @save_message  = erase_message
     display
   end
 
