@@ -26,6 +26,35 @@ class Game
     @save_message   = ''
   end
 
+  def play_chess
+    system('clear')
+    loop do
+      set_up_and_play
+      break if game_over?
+
+      change_player!
+    end
+    end_of_game
+  end
+
+  def display
+    board.print_board
+    puts move_message
+    puts turn_message
+    puts check_message
+    print save_message
+  end
+
+  def set_up_and_play
+    board.set_all_available_moves(current_player.color)
+    play_round(current_player.color)
+    board.set_all_available_moves(next_player.color)
+  end
+
+  def change_player!
+    @players.rotate!
+  end
+
   def current_player
     players.first
   end
@@ -34,18 +63,20 @@ class Game
     players.last
   end
 
-  def change_player!
-    @players.rotate!
+  def game_over?
+    checkmate? || stalemate?
   end
+
+  def move_piece(start, destination)
+    board.move_piece(start.to_a, destination.to_a)
+  end
+
+  private
 
   def set_up_board
     board = Board.new(config: Pieces.config(:white, :black))
     board.populate_board
     board
-  end
-
-  def move_piece(start, destination)
-    board.move_piece(start.to_a, destination.to_a)
   end
 
   def play_round(color)
@@ -82,38 +113,9 @@ class Game
       .each { |pawn| pawn.ep_counter += 1 if pawn.times_moved == 1 }
   end
 
-  def display
-    board.print_board
-    puts move_message
-    puts turn_message
-    puts check_message
-    print save_message
-  end
-
-  def play_chess
-    system('clear')
-    loop do
-      set_up_and_play
-      break if game_over?
-
-      change_player!
-    end
-    end_of_game
-  end
-
   def end_of_game
     puts checkmate? ? mate_message : stalemate_message
     puts win_message(current_player.color)
-  end
-
-  def set_up_and_play
-    board.set_all_available_moves(current_player.color)
-    play_round(current_player.color)
-    board.set_all_available_moves(next_player.color)
-  end
-
-  def game_over?
-    checkmate? || stalemate?
   end
 
   def checkmate?

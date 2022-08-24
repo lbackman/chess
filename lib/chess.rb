@@ -29,6 +29,8 @@ class Chess
     game_over_prompt
   end
 
+  private
+
   def game_setup
     system('clear')
     puts new_game_message

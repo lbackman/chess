@@ -19,14 +19,6 @@ class Board
     @current_rank = 1
   end
 
-  def create_board(square)
-    board_hash = {}
-    1.upto(8) do |i|
-      1.upto(8) { |j| board_hash[[j, i]] = square.new(file: j, rank: i) }
-    end
-    board_hash
-  end
-
   def populate_board
     board.each { |k, v| v.piece = config[file: k.first, rank: k.last][:piece] }
   end
@@ -65,6 +57,46 @@ class Board
     piece.times_moved -= 1
   end
 
+  def squares(color)
+    board.select { |_k, v| v.piece_color == color }
+  end
+
+  def set_all_available_moves(color)
+    attack_hash = all_attacks(color)
+    attack_hash.each { |k, v| set_available_moves(k.last, k.first, v) }
+    set_available_castles(color)
+  end
+
+  def king_checked?(color)
+    all_attacks(other_color(color)).any? { |_k, v| v.include?(king_coord(color)) }
+  end
+
+  def en_passant(destination, pawn)
+    ep_square(destination, pawn).piece = nil
+  end
+
+  def promotion(destination, pawn)
+    destination.piece = Pieces::Queen.new(pawn.color)
+  end
+
+  def castle(color, type)
+    temp_rook = board[rook_coord(color, type)].piece
+    board[rook_coord(color, type)].piece = nil
+    board[castle_coord1(color, type)].piece = temp_rook
+  end
+
+  def other_color(color)
+    { white: :black, black: :white }[color]
+  end
+
+  def ep_square(square, pawn)
+    board[[square.file, square.rank - pawn.direction]]
+  end
+
+  def all_pawns(color)
+    squares(color).select { |_k, v| v.piece_name == 'pawn' }.map { |_k, v| v.piece }
+  end
+
   def attacks(file:, rank:)
     return [] if board[[file, rank]].piece.nil?
 
@@ -75,6 +107,24 @@ class Board
     else
       default_attacks(file: file, rank: rank, piece: piece)
     end
+  end
+
+  def castling_allowed?(color, type)
+    !king_checked?(color) &&
+      board[king_coord(color)]&.piece_moved&.zero? &&
+      board[rook_coord(color, type)]&.piece_moved&.zero? &&
+      castle_squares_unattacked?(color, type) &&
+      board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
+  end
+
+  private
+
+  def create_board(square)
+    board_hash = {}
+    1.upto(8) do |i|
+      1.upto(8) { |j| board_hash[[j, i]] = square.new(file: j, rank: i) }
+    end
+    board_hash
   end
 
   def default_attacks(file:, rank:, piece:)
@@ -122,10 +172,6 @@ class Board
     board[[file, rank].zip(vector.map { |n| n * range }).map(&:sum)]
   end
 
-  def squares(color)
-    board.select { |_k, v| v.piece_color == color }
-  end
-
   def king_coord(color)
     squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
   end
@@ -158,44 +204,6 @@ class Board
     available.each { |move| king.available_moves << move }
   end
 
-  def set_all_available_moves(color)
-    attack_hash = all_attacks(color)
-    attack_hash.each { |k, v| set_available_moves(k.last, k.first, v) }
-    set_available_castles(color)
-  end
-
-  def king_checked?(color)
-    all_attacks(other_color(color)).any? { |_k, v| v.include?(king_coord(color)) }
-  end
-
-  def other_color(color)
-    { white: :black, black: :white }[color]
-  end
-
-  def all_pawns(color)
-    squares(color).select { |_k, v| v.piece_name == 'pawn' }.map { |_k, v| v.piece }
-  end
-
-  def ep_square(square, pawn)
-    board[[square.file, square.rank - pawn.direction]]
-  end
-
-  def en_passant(destination, pawn)
-    ep_square(destination, pawn).piece = nil
-  end
-
-  def promotion(destination, pawn)
-    destination.piece = Pieces::Queen.new(pawn.color)
-  end
-
-  def castling_allowed?(color, type)
-    !king_checked?(color) &&
-      board[king_coord(color)]&.piece_moved&.zero? &&
-      board[rook_coord(color, type)]&.piece_moved&.zero? &&
-      castle_squares_unattacked?(color, type) &&
-      board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
-  end
-
   def rook_coord(color, type)
     { white: { long: [1, 1], short: [8, 1] }, black: { long: [1, 8], short: [8, 8] } }[color][type]
   end
@@ -223,11 +231,5 @@ class Board
     rank = { white: 2, black: 7 }[color]
     range = { long: (1..5), short: (5..8) }[type]
     range.map { |i| board[[i, rank]] }.any? { |sq| sq.piece_name == 'pawn' && sq.piece_color == other_color(color) }
-  end
-
-  def castle(color, type)
-    temp_rook = board[rook_coord(color, type)].piece
-    board[rook_coord(color, type)].piece = nil
-    board[castle_coord1(color, type)].piece = temp_rook
   end
 end

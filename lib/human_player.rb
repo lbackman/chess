@@ -12,6 +12,22 @@ class HumanPlayer
     @color = color
   end
 
+  def get_start_square(board, game)
+    loop do
+      next until handle_input(board, game)
+      start = choose_start(board)
+      return start if !start.nil? && start.piece_color == color
+    end
+  end
+
+  def get_destination_square(board, start, game)
+    loop do
+      next until handle_input(board, game)
+      destination = choose_destination(board, start)
+      return destination unless destination.nil?
+    end
+  end
+
   def handle_direction_input(board, game)
     case $stdin.getch
     when 'A' then board.change_rank(1)
@@ -35,6 +51,8 @@ class HumanPlayer
     end
   end
 
+  private
+
   def choose_start(board)
     start = board.current_square
     return start if start&.legal_piece_moves && !start.legal_piece_moves.empty?
@@ -44,21 +62,5 @@ class HumanPlayer
     destination = board.current_square
     piece = start.piece
     return destination if piece.available_moves.include?(destination.to_a)
-  end
-
-  def get_start_square(board, game)
-    loop do
-      next until handle_input(board, game)
-      start = choose_start(board)
-      return start if !start.nil? && start.piece_color == color
-    end
-  end
-
-  def get_destination_square(board, start, game)
-    loop do
-      next until handle_input(board, game)
-      destination = choose_destination(board, start)
-      return destination unless destination.nil?
-    end
   end
 end
