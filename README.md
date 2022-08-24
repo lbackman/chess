@@ -11,6 +11,7 @@ The things I struggled most with logic-wise, were:
 - To have the player only be able to choose pieces with legal moves
 - To implement rules for en passant
 - To implement rules for castling
+
 These parts are also where the code feels most clunky and ad-hoc.
 
 ## Instructions
