@@ -1,5 +1,10 @@
+# frozen_string_literal: true
+
+# lib/human_player.rb
+
 require 'io/console'
 
+# handles input from human player
 class HumanPlayer
   attr_reader :color
 
@@ -22,9 +27,9 @@ class HumanPlayer
     case $stdin.getch
     when "\r" then true
     when '[' then handle_direction_input(game, board)
-    when "q" then exit
-    when "s" then game.save_game
-    when 'r' then
+    when 'q' then exit
+    when 's' then game.save_game
+    when 'r'
       puts 'resign'
       exit
     end
