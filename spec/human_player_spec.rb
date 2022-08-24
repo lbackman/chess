@@ -25,14 +25,14 @@ RSpec.describe HumanPlayer do
 
     describe '#get_start_square' do
       it 'returns a square' do
-        result = human.get_start_square(game, board)
+        result = human.get_start_square(board, game)
         expect(result).to eq(start)
       end
     end
 
     describe '#get_destination_square' do
       it 'returns a square' do
-        result = human.get_destination_square(game, board, start)
+        result = human.get_destination_square(board, start, game)
         expect(result).to eq(destination)
       end
     end
@@ -61,7 +61,7 @@ RSpec.describe HumanPlayer do
       it 'also loops three times' do
         expect(human).to receive(:handle_input).exactly(3).times
         expect(human).to receive(:choose_destination).exactly(3).times.and_return(nil, nil, destination)
-        human.get_destination_square(game, board, start)
+        human.get_destination_square(board, start, game)
       end
     end
   end
@@ -77,7 +77,7 @@ RSpec.describe HumanPlayer do
         allow($stdin).to receive(:getch).and_return('[', 'A')
 
         expect(board).to receive(:change_rank).with(1)
-        human.handle_input(game, board)
+        human.handle_input(board, game)
       end
     end
 
@@ -86,7 +86,7 @@ RSpec.describe HumanPlayer do
         allow($stdin).to receive(:getch).and_return('[', 'D')
 
         expect(board).to receive(:change_file).with(-1)
-        human.handle_input(game, board)
+        human.handle_input(board, game)
       end
     end
 
@@ -95,7 +95,7 @@ RSpec.describe HumanPlayer do
         allow($stdin).to receive(:getch).and_return('s')
 
         expect(game).to receive(:save_game)
-        human.handle_input(game, board)
+        human.handle_input(board, game)
       end
     end
 
@@ -104,7 +104,7 @@ RSpec.describe HumanPlayer do
         allow($stdin).to receive(:getch).and_return('q')
 
         expect(human).to receive(:exit)
-        human.handle_input(game, board)
+        human.handle_input(board, game)
       end
     end
 
@@ -112,7 +112,7 @@ RSpec.describe HumanPlayer do
       it 'returns true' do
         allow($stdin).to receive(:getch).and_return("\r")
 
-        expect(human.handle_input(game, board)).to eq(true)
+        expect(human.handle_input(board, game)).to eq(true)
       end
     end
   end
