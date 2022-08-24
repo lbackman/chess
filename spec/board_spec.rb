@@ -1,15 +1,20 @@
+# frozen_string_literal: true
+
+# spec/board_spec.rb
+
 require 'board'
 
 SqrDbl = Struct.new(:file, :rank, :piece, :marked, keyword_init: true) do
   def initialize(*)
-      super
-      self.piece ||= nil
+    super
+    self.piece ||= nil
   end
 end
 
 class PieceDbl
   attr_reader :color, :name
   attr_accessor :times_moved, :available_moves
+
   def initialize(color)
     @color = color
     @name = ''
@@ -34,8 +39,11 @@ RSpec.describe Board do
 
   describe '#populate_board' do
     subject(:populated_board) { described_class.new(square: SqrDbl, config: double_config) }
-    let(:double_config) { Hash.new(piece: nil).merge(
-      { file: 1, rank: 2 } => { piece: PawnDbl.new('white') }) }
+    let(:double_config) do
+      Hash.new(piece: nil).merge(
+        { file: 1, rank: 2 } => { piece: PawnDbl.new('white') }
+      )
+    end
     before do
       populated_board.populate_board
     end
@@ -55,22 +63,25 @@ RSpec.describe Board do
   end
 
   describe '#move_piece' do
-    subject(:move_board) {  described_class.new(square: SqrDbl, config: double_config )}
-    let(:double_config) { Hash.new(piece: nil).merge(
-      { file: 1, rank: 2 } => { piece: PawnDbl.new('white') }) }
+    subject(:move_board) { described_class.new(square: SqrDbl, config: double_config) }
+    let(:double_config) do
+      Hash.new(piece: nil).merge(
+        { file: 1, rank: 2 } => { piece: PawnDbl.new('white') }
+      )
+    end
     context 'when moving a pawn from a2 to a4' do
       before do
         move_board.populate_board
-        @piece = move_board.board[[1,2]].piece
-        move_board.move_piece([1,2], [1,4])
+        @piece = move_board.board[[1, 2]].piece
+        move_board.move_piece([1, 2], [1, 4])
       end
 
       it 'the pawn is at a4' do
-        expect(move_board.board[[1,4]].piece).to eq(@piece)
+        expect(move_board.board[[1, 4]].piece).to eq(@piece)
       end
 
       it 'there is no piece at a2' do
-        expect(move_board.board[[1,2]].piece).to be_nil
+        expect(move_board.board[[1, 2]].piece).to be_nil
       end
     end
   end
@@ -152,7 +163,7 @@ RSpec.describe Board do
     end
 
     it 'white knight on d2 can take black queen b3' do
-      expect(@wn_attacks).to include([2,3])
+      expect(@wn_attacks).to include([2, 3])
     end
 
     it 'black pawn on d5 can take white rook on e4 and only that square' do
@@ -211,14 +222,13 @@ RSpec.describe Board do
 
   describe '#castling_allowed?' do
     subject(:c_board) { described_class.new(square: Square) }
-    let(:w_king)      { PieceDbl.new(:white) } 
+    let(:w_king)      { PieceDbl.new(:white) }
     let(:w_rook1)     { PieceDbl.new(:white) }
     let(:w_rook2)     { PieceDbl.new(:white) }
     let(:b_queen)     { PieceDbl.new(:black) }
     let(:w_knight)    { PieceDbl.new(:white) }
 
     context 'when all conditions are met' do
-
       before do
         allow(w_rook1).to receive(:available_moves).and_return([[4, 1]])
         allow(w_rook2).to receive(:available_moves).and_return([[6, 1]])
