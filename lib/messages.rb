@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# lib/messages.rb
+
 # output messages
 module Messages
   def logo
