@@ -1,6 +1,11 @@
+# frozen_string_literal: true
+
+# lib/chess.rb
+
 require_relative 'game'
 require_relative 'save'
 
+# game set-up
 class Chess
   include Messages
   include Save
@@ -68,19 +73,19 @@ class Chess
 
   def human_vs_human
     Game.new(
-        players: [HumanPlayer.new(color: :white), 
-                  HumanPlayer.new(color: :black)]).play_chess
+      players: [HumanPlayer.new(color: :white), HumanPlayer.new(color: :black)]
+    ).play_chess
   end
 
   def human_vs_computer
     Game.new(
-        players: [HumanPlayer.new(color: :white),
-                  ComputerPlayer.new(color: :black)]).play_chess
+      players: [HumanPlayer.new(color: :white), ComputerPlayer.new(color: :black)]
+    ).play_chess
   end
 
   def computer_vs_computer
     Game.new(
-        players: [ComputerPlayer.new(color: :white),
-                  ComputerPlayer.new(color: :black)]).play_chess
+      players: [ComputerPlayer.new(color: :white), ComputerPlayer.new(color: :black)]
+    ).play_chess
   end
 end
