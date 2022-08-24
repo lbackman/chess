@@ -16,4 +16,4 @@ These parts are also where the code feels most clunky and ad-hoc.
 
 ## Instructions
 The playing mechanics should be clear from the instructions in the game. 
-Normal chess rules apply. However, the only way this game ends in a draw possible is with stalemate. No fifty-move-rule or three-fold repetition is implemented.
+Normal chess rules apply. However, the only way this game ends in a draw is with stalemate. No fifty-move-rule or three-fold repetition is implemented.
