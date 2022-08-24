@@ -1,3 +1,8 @@
+# frozen_string_literal: false
+
+# lib/square.rb
+
+# determines square properties
 class Square
   attr_reader :file, :rank, :background_color
   attr_accessor :piece, :marked
@@ -12,8 +17,8 @@ class Square
 
   def to_s
     file_map =
-      {1 => 'a', 2 => 'b', 3 => 'c', 4 => 'd',
-       5 => 'e', 6 => 'f', 7 => 'g', 8 => 'h'}
+      { 1 => 'a', 2 => 'b', 3 => 'c', 4 => 'd',
+        5 => 'e', 6 => 'f', 7 => 'g', 8 => 'h' }
     file_map[file].concat(rank.to_s)
   end
 
