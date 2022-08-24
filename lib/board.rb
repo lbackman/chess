@@ -1,8 +1,17 @@
+# frozen_string_literal: true
+
+# lib/board.rb
+
 require_relative 'square'
 require_relative 'pieces'
+require_relative 'board_presentation'
 
+# manages moves on chessboard
 class Board
+  include BoardPresentation
+
   attr_reader :board, :config, :current_file, :current_rank
+
   def initialize(square: Square, config: {})
     @board = create_board(square)
     @config = config
@@ -13,7 +22,7 @@ class Board
   def create_board(square)
     board_hash = {}
     1.upto(8) do |i|
-      1.upto(8) { |j| board_hash[[j,i]] = square.new(file: j, rank: i) }
+      1.upto(8) { |j| board_hash[[j, i]] = square.new(file: j, rank: i) }
     end
     board_hash
   end
@@ -62,12 +71,12 @@ class Board
     piece = board[[file, rank]].piece
     case piece.name
     when 'pawn'
-      pawn_attacks(file:, rank:, pawn: piece)
-    else 
-      default_attacks(file:, rank:, piece:)
+      pawn_attacks(file: file, rank: rank, pawn: piece)
+    else
+      default_attacks(file: file, rank: rank, piece: piece)
     end
   end
-    
+
   def default_attacks(file:, rank:, piece:)
     attacked = []
     piece.vectors.each do |vector|
@@ -79,16 +88,14 @@ class Board
       end
       sub.each { |el| attacked << el }
     end
-    attacked.reject { |square| square.piece_color == piece.color }
-      .map { |s| [s.file, s.rank] }
+    attacked.reject { |square| square.piece_color == piece.color }.map { |s| [s.file, s.rank] }
   end
 
   def pawn_attacks(file:, rank:, pawn:)
     attacked = []
-    pawn_moves(file:, rank:, pawn:, arr: attacked)
-    pawn_captures(file:, rank:, pawn:, arr: attacked)
-    attacked.reject { |square| square.piece_color == pawn.color }
-      .map { |s| [s.file, s.rank] }
+    pawn_moves(file: file, rank: rank, pawn: pawn, arr: attacked)
+    pawn_captures(file: file, rank: rank, pawn: pawn, arr: attacked)
+    attacked.reject { |square| square.piece_color == pawn.color }.map { |s| [s.file, s.rank] }
   end
 
   def pawn_moves(file:, rank:, pawn:, arr:)
@@ -115,39 +122,10 @@ class Board
     board[[file, rank].zip(vector.map { |n| n * range }).map(&:sum)]
   end
 
-  def print_upper_lower_rank(rank)
-    1.upto(8).map { |i| board[[i, rank]].upper_lower_third }.join
-  end
-
-  def print_middle_rank(rank)
-    1.upto(8).map { |i| board[[i, rank]].middle_third }.join
-  end
-
-  def print_rank(rank)
-    " #{print_upper_lower_rank(rank)} \n" +
-    "#{rank}#{print_middle_rank(rank)}\n"      +
-    " #{print_upper_lower_rank(rank)} "
-  end
-
-  def print_files
-    "   a    b    c    d    e    f    g    h    "
-  end
-
-  def print_board
-    puts "\033[31A"
-    puts legend
-    puts 8.downto(1).map { |i| print_rank(i) }.join("\n")
-    puts print_files
-  end
-
-  def legend
-    "      MOVE: \u2190\u2191\u2192\u2193, SAVE: 'S', QUIT: 'Q'"
-  end
-
   def squares(color)
     board.select { |_k, v| v.piece_color == color }
   end
-  
+
   def king_coord(color)
     squares(color).each_value.select { |v| v.piece_name == 'king' }.first.to_a
   end
@@ -174,7 +152,7 @@ class Board
   def set_available_castles(color)
     king = board[king_coord(color)].piece
     available = []
-    [:long, :short].each do |type|
+    %i[long short].each do |type|
       available << castle_coord2(color, type) if castling_allowed?(color, type)
     end
     available.each { |move| king.available_moves << move }
@@ -187,8 +165,7 @@ class Board
   end
 
   def king_checked?(color)
-    all_attacks(other_color(color))
-      .any? { |_k, v| v.include?(king_coord(color)) }
+    all_attacks(other_color(color)).any? { |_k, v| v.include?(king_coord(color)) }
   end
 
   def other_color(color)
@@ -196,8 +173,7 @@ class Board
   end
 
   def all_pawns(color)
-    squares(color).select { |_k, v| v.piece_name == 'pawn' }
-    .map { |_k, v| v.piece }
+    squares(color).select { |_k, v| v.piece_name == 'pawn' }.map { |_k, v| v.piece }
   end
 
   def ep_square(square, pawn)
@@ -214,22 +190,22 @@ class Board
 
   def castling_allowed?(color, type)
     !king_checked?(color) &&
-    board[king_coord(color)]&.piece_moved == 0 &&
-    board[rook_coord(color, type)]&.piece_moved == 0 &&
-    castle_squares_unattacked?(color, type) &&
-    board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
+      board[king_coord(color)]&.piece_moved&.zero? &&
+      board[rook_coord(color, type)]&.piece_moved&.zero? &&
+      castle_squares_unattacked?(color, type) &&
+      board[rook_coord(color, type)].legal_piece_moves.include?(castle_coord1(color, type))
   end
 
   def rook_coord(color, type)
-    {white: {long: [1, 1], short: [8, 1]}, black: {long: [1, 8], short: [8, 8]}}[color][type]
+    { white: { long: [1, 1], short: [8, 1] }, black: { long: [1, 8], short: [8, 8] } }[color][type]
   end
 
   def castle_coord1(color, type)
-    {white: {long: [4, 1], short: [6, 1]}, black: {long: [4, 8], short: [6, 8]}}[color][type]
+    { white: { long: [4, 1], short: [6, 1] }, black: { long: [4, 8], short: [6, 8] } }[color][type]
   end
 
   def castle_coord2(color, type)
-    {white: {long: [3, 1], short: [7, 1]}, black: {long: [3, 8], short: [7, 8]}}[color][type]
+    { white: { long: [3, 1], short: [7, 1] }, black: { long: [3, 8], short: [7, 8] } }[color][type]
   end
 
   def castle_squares_unattacked?(color, type)
@@ -244,10 +220,9 @@ class Board
   end
 
   def pawn_attack?(color, type)
-    rank = {white: 2, black: 7}[color]
-    range = {long: (1..5), short: (5..8)}[type]
-    range.map { |i| board[[i, rank]] }
-      .any? { |sq| sq.piece_name == 'pawn' && sq.piece_color == other_color(color) }
+    rank = { white: 2, black: 7 }[color]
+    range = { long: (1..5), short: (5..8) }[type]
+    range.map { |i| board[[i, rank]] }.any? { |sq| sq.piece_name == 'pawn' && sq.piece_color == other_color(color) }
   end
 
   def castle(color, type)
@@ -256,45 +231,3 @@ class Board
     board[castle_coord1(color, type)].piece = temp_rook
   end
 end
-
-# initial_board_config = Pieces.config(:white, :black)
-
-# b = Board.new(config: initial_board_config)
-# b.populate_board
-# b.change_rank
-# puts b.print_board
-# b.change_rank(-1)
-# b.board[[4, 4]].piece = Pieces::Pawn.new(:white)
-# b.board[[4, 5]].piece = Pieces::Pawn.new(:black)
-# b.board[[2, 3]].piece = Pieces::Queen.new(:black)
-# b.board[[4, 2]].piece = Pieces::Knight.new(:white)
-# b.board[[1, 1]].piece = Pieces::Knight.new(:black)
-# b.board[[5, 4]].piece = Pieces::Rook.new(:white)
-# b.board[[6, 2]].piece = Pieces::King.new(:white)
-# b.board[[5, 1]].piece = Pieces::King.new(:white)
-# b.board[[8, 8]].piece = Pieces::King.new(:black)
-# b.board[[8, 2]].piece = Pieces::Pawn.new(:white)
-# b.board[[8, 1]].piece = Pieces::Bishop.new(:black)
-# b.board[[8, 4]].piece = Pieces::Rook.new(:white)
-# b.board[[8, 1]].piece = Pieces::Rook.new(:white)
-# b.board[[1, 1]].piece = Pieces::Rook.new(:white)
-# b.board[[2, 1]].piece = Pieces::Knight.new(:white)
-# b.board[[7, 5]].piece = Pieces::Rook.new(:black)
-# b.board[[7, 5]].piece = Pieces::Pawn.new(:black)
-# b.print_board
-# p b.attacks(file: 8, rank: 1)
-# b.squares(:white).each_value { |v| puts v }
-# p b.squares(:white)
-# p b.king_coord(:white)
-# puts b.king_checked?(:white)
-# puts b.king_checked?(:black)
-# p b.all_attacks(:black)
-# b.set_all_available_moves(:black)
-# b.set_all_available_moves(:white)
-# b.board[[1,1]].piece.times_moved = 0
-# b.print_board
-# p b.board[[6, 2]].piece.available_moves
-# p b.all_pawns(:white)
-# p b.castling_allowed?(:white, :long)
-# p b.castling_allowed?(:white, :short)
-# puts b.choosable_squares(:white)
